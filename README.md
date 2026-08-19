@@ -6,6 +6,7 @@ This repository contains the React frontend for the Vyloc platform. It provides 
 
 Features
 
+
 User Features
 
 User registration and login
