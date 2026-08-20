@@ -12,3 +12,20 @@ function ComingSoon({ title }) {
       </div>
     )
   }
+  function App() {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Splash />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/home" element={<ComingSoon title="Home" />} />
+          <Route path="/admin" element={<ComingSoon title="Admin" />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    )
+  }
+  
+  export default App
