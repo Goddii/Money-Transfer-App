@@ -16,7 +16,7 @@ function ForgotPassword() {
       setToken(response.data.reset_token)
       setMessage('Reset token generated successfully.')
     } catch (err) {
-      setError('Email not found. Please try again.')
+      setError(err.response?.data?.message || 'Email not found. Please try again.')
     }
   }
 
