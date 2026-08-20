@@ -1,22 +1,32 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AdminDashboard from './pages/AdminDashboard';
-import UserManagement from './pages/UserManagement';
-import UserDetail from './pages/UserDetail';
-import RevenueAnalytics from './pages/RevenueAnalytics';
-import PlatformAnalytics from './pages/PlatformAnalytics';
-import AdminSettings from './pages/AdminSettings';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Splash from './pages/Splash/Splash'
+import Login from './pages/Login/Login'
+import Register from './pages/Register/Register'
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
 
-export default function App() {
+function ComingSoon({ title }) {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0a0a1a', color: '#fff', fontFamily: 'system-ui, sans-serif' }}>
+      <h1 style={{ fontSize: '2rem', margin: '0 0 0.5rem' }}>{title}</h1>
+      <p style={{ color: '#8899aa' }}>This section is coming soon.</p>
+    </div>
+  )
+}
+
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AdminDashboard />} />
-        <Route path="/users" element={<UserManagement />} />
-        <Route path="/users/:id" element={<UserDetail />} />
-        <Route path="/revenue" element={<RevenueAnalytics />} />
-        <Route path="/platform" element={<PlatformAnalytics />} />
-        <Route path="/settings" element={<AdminSettings />} />
+        <Route path="/" element={<Splash />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/home" element={<ComingSoon title="Home" />} />
+        <Route path="/admin" element={<ComingSoon title="Admin" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
+
+export default App
