@@ -7,7 +7,7 @@ import { admin } from '../mockData';
 
 export default function AdminDashboard() {
   const { overview } = useSelector((s) => s.analytics);
-  const maxVol = Math.max(...overview.txVolume30d);
+  const maxVol = Math.max(...overview.txVolume30d, 1);
 
   return (
     <Screen nav="Dashboard">

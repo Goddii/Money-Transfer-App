@@ -1,13 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { users as seedUsers } from '../../mockData';
 
-// Owns the admin's view of platform users: list, filter, and the
-// CRUD-style actions (freeze / unfreeze / edit) exposed on the Admin > Users pages.
 const usersSlice = createSlice({
   name: 'users',
   initialState: {
     list: seedUsers,
-    filter: 'All', // 'All' | 'Active' | 'Frozen'
+    filter: 'All',
     query: '',
   },
   reducers: {

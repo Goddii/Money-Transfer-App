@@ -6,7 +6,7 @@ import { admin } from '../mockData';
 export default function RevenueAnalytics() {
   const dispatch = useDispatch();
   const { revenue, revenueRange } = useSelector((s) => s.analytics);
-  const maxVal = Math.max(...revenue.trend.map((t) => t.value));
+  const maxVal = Math.max(...revenue.trend.map((t) => t.value), 1);
 
   return (
     <Screen nav="Audit Log">
@@ -56,6 +56,11 @@ export default function RevenueAnalytics() {
 
       <div className="section-title">Revenue by Source</div>
       <div className="card">
+        {revenue.bySource.length === 0 && (
+          <div style={{ padding: '8px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
+            No revenue recorded yet.
+          </div>
+        )}
         {revenue.bySource.map((s, i) => (
           <div key={s.label} style={{ marginBottom: i === revenue.bySource.length - 1 ? 0 : 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 13 }}>

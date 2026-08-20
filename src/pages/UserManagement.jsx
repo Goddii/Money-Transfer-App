@@ -57,7 +57,7 @@ export default function UserManagement() {
       <div className="card">
         {filtered.length === 0 && (
           <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
-            No users match this search.
+            {list.length === 0 ? 'No users yet.' : 'No users match this search.'}
           </div>
         )}
         {filtered.map((u) => (

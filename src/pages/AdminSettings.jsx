@@ -48,6 +48,11 @@ export default function AdminSettings() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+        {entries.length === 0 && (
+          <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
+            No activity yet.
+          </div>
+        )}
         {entries.map((e) => (
           <div key={e.id} className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>

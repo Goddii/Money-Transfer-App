@@ -4,7 +4,7 @@ import { admin } from '../mockData';
 
 export default function PlatformAnalytics() {
   const { platform } = useSelector((s) => s.analytics);
-  const maxGrowth = Math.max(...platform.growthCurve);
+  const maxGrowth = Math.max(...platform.growthCurve, 1);
 
   return (
     <Screen nav="Dashboard">
@@ -45,6 +45,11 @@ export default function PlatformAnalytics() {
 
       <div className="section-title">Most Active Users</div>
       <div className="card">
+        {platform.mostActive.length === 0 && (
+          <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
+            No user activity yet.
+          </div>
+        )}
         {platform.mostActive.map((u, i) => (
           <div key={u.name} className="list-row">
             <div className="list-left">
