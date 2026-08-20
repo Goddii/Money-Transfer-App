@@ -4,6 +4,7 @@ import api from '../../utils/api'
 
 function Register() {
   const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
@@ -46,8 +47,12 @@ function Register() {
       {error && <p style={styles.error}>{error}</p>}
       <form onSubmit={handleSubmit} style={styles.form}>
         <div style={styles.inputGroup}>
-          <label style={styles.label}>Full Name</label>
-          <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Alex Carter" style={styles.input} required />
+          <label style={styles.label}>First Name</label>
+          <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Alex" style={styles.input} required />
+        </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Last Name</label>
+          <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Carter" style={styles.input} required />
         </div>
         <div style={styles.inputGroup}>
           <label style={styles.label}>Email Address</label>
