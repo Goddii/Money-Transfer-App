@@ -24,11 +24,18 @@ function Register() {
       setError('Please agree to the Terms of Service')
       return
     }
+    setError('')
     try {
-      await api.post('/register', { first_name: firstName, email, phone, password })
+      await api.post('/auth/register', {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        phone_number: phone,
+        password
+      })
       navigate('/login')
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed. Try again.')
+      setError(err.response?.data?.message || 'Registration failed. Try again.')
     }
   }
 
