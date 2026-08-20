@@ -15,19 +15,21 @@ function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    setError('')
     try {
-      const response = await api.post('/login', { email, password })
+      const response = await api.post('/auth/login', { email, password })
+      const { access_token, user } = response.data.data
       dispatch(loginSuccess({
-        user: response.data.user,
-        token: response.data.token
+        user: user,
+        token: access_token
       }))
-      if (response.data.user.role === 'admin') {
+      if (user.role === 'admin') {
         navigate('/admin')
       } else {
         navigate('/home')
       }
     } catch (err) {
-      setError('Invalid email or password')
+      setError(err.response?.data?.message || 'Invalid email or password')
     }
   }
 
