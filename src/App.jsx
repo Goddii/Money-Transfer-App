@@ -9,6 +9,7 @@ import PlatformAnalytics from './pages/PlatformAnalytics'
 import RevenueAnalytics from './pages/RevenueAnalytics'
 import UserManagement from './pages/UserManagement'
 import UserDetail from './pages/UserDetail'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   return (
@@ -18,13 +19,13 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/settings" element={<AdminSettings />} />
-        <Route path="/admin/platform" element={<PlatformAnalytics />} />
-        <Route path="/admin/revenue" element={<RevenueAnalytics />} />
-        <Route path="/admin/users" element={<UserManagement />} />
-        <Route path="/admin/users/:id" element={<UserDetail />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute adminOnly><AdminSettings /></ProtectedRoute>} />
+        <Route path="/admin/platform" element={<ProtectedRoute adminOnly><PlatformAnalytics /></ProtectedRoute>} />
+        <Route path="/admin/revenue" element={<ProtectedRoute adminOnly><RevenueAnalytics /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute adminOnly><UserManagement /></ProtectedRoute>} />
+        <Route path="/admin/users/:id" element={<ProtectedRoute adminOnly><UserDetail /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

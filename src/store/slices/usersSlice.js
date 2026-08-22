@@ -6,6 +6,21 @@ export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
   return response.data;
 });
 
+export const fetchUserProfile = createAsyncThunk(
+  'users/fetchUserProfile',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/v1/admin/users/${userId}/profile`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue({
+        status: err.response?.status,
+        message: err.response?.data?.message || err.message,
+      });
+    }
+  }
+);
+
 export const toggleFreeze = createAsyncThunk('users/toggleFreeze', async (userId) => {
   const response = await api.patch(`/v1/admin/users/${userId}/toggle-freeze`);
   return response.data;
@@ -29,6 +44,11 @@ const initialState = {
   list: [],
   filter: 'All',
   query: '',
+  profile: null,
+  profileLoading: false,
+  profileError: null,
+  loading: false,
+  error: null,
 };
 
 const usersSlice = createSlice({
@@ -44,14 +64,43 @@ const usersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
         state.list = action.payload.users || [];
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Failed to load users.';
+      })
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.profileLoading = true;
+        state.profileError = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.profileLoading = false;
+        state.profile = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.profileLoading = false;
+        state.profileError = action.payload || { message: 'Failed to load user profile.' };
       })
       .addCase(toggleFreeze.fulfilled, (state, action) => {
         const userId = action.meta.arg;
         const user = state.list.find((u) => u.id === userId);
         if (user && action.payload.status) {
           user.status = action.payload.status;
+        }
+        // Keep an open profile view in sync with the freeze toggle.
+        if (
+          state.profile &&
+          String(state.profile.id) === String(userId) &&
+          action.payload.status
+        ) {
+          state.profile.status = action.payload.status;
         }
       });
   },

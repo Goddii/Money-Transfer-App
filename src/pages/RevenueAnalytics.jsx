@@ -3,21 +3,52 @@ import Screen from '../components/Screen';
 import { fetchRevenue, setRevenueRange } from '../store/slices/analyticsSlice';
 import { useEffect } from 'react';
 
+const centerStyle = {
+  padding: '40px 0',
+  textAlign: 'center',
+  color: 'var(--ink-500)',
+  fontSize: 14,
+};
+
 export default function RevenueAnalytics() {
   const dispatch = useDispatch();
-  const { revenue, revenueRange } = useSelector((s) => s.analytics);
+  const { revenue, revenueRange, revenueLoading, revenueError } = useSelector((s) => s.analytics);
+  const adminUser = useSelector((s) => s.auth.user);
   const maxVal = Math.max(...revenue.trend.map((t) => t.value), 1);
 
   useEffect(() => {
     dispatch(fetchRevenue());
   }, [dispatch]);
 
+  if (revenueError) {
+    return (
+      <Screen nav="Revenue">
+        <div style={centerStyle}>
+          <div className="page-title" style={{ marginBottom: 8 }}>Unable to load revenue</div>
+          <div style={{ fontSize: 13 }}>{revenueError}</div>
+          <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => dispatch(fetchRevenue())}>Retry</button>
+        </div>
+      </Screen>
+    );
+  }
+
+  if (revenueLoading) {
+    return (
+      <Screen nav="Revenue">
+        <div style={centerStyle}>Loading revenue…</div>
+      </Screen>
+    );
+  }
+
+  const avatar = adminUser?.avatar_url || '';
+  const name = adminUser?.name || '';
+
   return (
-    <Screen nav="Audit Log">
+    <Screen nav="Revenue">
       <div className="page-eyebrow">Fee Analytics</div>
       <div className="page-title-row">
         <div className="page-title">Revenue</div>
-        <img className="avatar" src={revenue.avatar} alt={revenue.name} />
+        <img className="avatar" src={avatar} alt={name} />
       </div>
 
       <div className="segment">

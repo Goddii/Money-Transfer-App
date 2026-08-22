@@ -7,9 +7,16 @@ import StatusPill from '../components/StatusPill';
 import { setFilter, setQuery, fetchUsers } from '../store/slices/usersSlice';
 import { admin } from '../mockData';
 
+const centerStyle = {
+  padding: '40px 0',
+  textAlign: 'center',
+  color: 'var(--ink-500)',
+  fontSize: 14,
+};
+
 export default function UserManagement() {
   const dispatch = useDispatch();
-  const { list, filter, query } = useSelector((s) => s.users);
+  const { list, filter, query, loading, error } = useSelector((s) => s.users);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -27,6 +34,26 @@ export default function UserManagement() {
       }),
     [list, filter, query]
   );
+
+  if (error) {
+    return (
+      <Screen nav="Users">
+        <div style={centerStyle}>
+          <div className="page-title" style={{ marginBottom: 8 }}>Unable to load users</div>
+          <div style={{ fontSize: 13 }}>{error}</div>
+          <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => dispatch(fetchUsers())}>Retry</button>
+        </div>
+      </Screen>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Screen nav="Users">
+        <div style={centerStyle}>Loading users…</div>
+      </Screen>
+    );
+  }
 
   return (
     <Screen nav="Users">

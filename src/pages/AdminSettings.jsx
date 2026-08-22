@@ -6,14 +6,41 @@ import StatusPill from '../components/StatusPill';
 import { setTypeFilter, setStatusFilter, fetchAuditLog } from '../store/slices/auditSlice';
 import { admin } from '../mockData';
 
+const centerStyle = {
+  padding: '40px 0',
+  textAlign: 'center',
+  color: 'var(--ink-500)',
+  fontSize: 14,
+};
+
 export default function AdminSettings() {
   const dispatch = useDispatch();
-  const { entries, typeFilter, statusFilter } = useSelector((s) => s.audit);
+  const { entries, typeFilter, statusFilter, loading, error } = useSelector((s) => s.audit);
   const [maintenance, setMaintenance] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAuditLog());
   }, [dispatch]);
+
+  if (error) {
+    return (
+      <Screen nav="Settings">
+        <div style={centerStyle}>
+          <div className="page-title" style={{ marginBottom: 8 }}>Unable to load audit log</div>
+          <div style={{ fontSize: 13 }}>{error}</div>
+          <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => dispatch(fetchAuditLog())}>Retry</button>
+        </div>
+      </Screen>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Screen nav="Settings">
+        <div style={centerStyle}>Loading audit log…</div>
+      </Screen>
+    );
+  }
 
   return (
     <Screen nav="Settings">
