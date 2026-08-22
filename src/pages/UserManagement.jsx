@@ -1,15 +1,17 @@
-import { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useMemo, useEffect, useDispatch, useSelector } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, ChevronRight } from 'lucide-react';
 import Screen from '../components/Screen';
 import StatusPill from '../components/StatusPill';
-import { setFilter, setQuery } from '../store/slices/usersSlice';
-import { admin } from '../mockData';
+import { setFilter, setQuery, fetchUsers } from '../store/slices/usersSlice';
 
 export default function UserManagement() {
   const dispatch = useDispatch();
   const { list, filter, query } = useSelector((s) => s.users);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   const filtered = useMemo(
     () =>
