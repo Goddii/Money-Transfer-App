@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChevronDown, ShieldCheck, Bell, Percent, Wrench, ChevronRight } from 'lucide-react';
 import Screen from '../components/Screen';
 import StatusPill from '../components/StatusPill';
-import { setTypeFilter, setStatusFilter } from '../store/slices/auditSlice';
+import { setTypeFilter, setStatusFilter, fetchAuditLog } from '../store/slices/auditSlice';
 import { admin } from '../mockData';
 
 export default function AdminSettings() {
   const dispatch = useDispatch();
   const { entries, typeFilter, statusFilter } = useSelector((s) => s.audit);
   const [maintenance, setMaintenance] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchAuditLog());
+  }, [dispatch]);
 
   return (
     <Screen nav="Settings">
@@ -21,10 +25,10 @@ export default function AdminSettings() {
       <div className="card" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
         <img className="avatar" style={{ width: 44, height: 44 }} src={admin.avatar} alt={admin.name} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 800 }}>{admin.name}</div>
-          <div className="row-sub">{admin.email}</div>
+          <div style={{ fontSize: 15, fontWeight: 800 }}>Super Admin User</div>
+          <div className="row-sub">admin@vyloo.com</div>
         </div>
-        <span className="pill pill-orange">{admin.role}</span>
+        <span className="pill pill-orange">ROOT</span>
       </div>
 
       <div className="page-eyebrow">System Ledger</div>

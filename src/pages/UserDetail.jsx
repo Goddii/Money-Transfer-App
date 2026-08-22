@@ -21,6 +21,16 @@ export default function UserDetail() {
   }
 
   const frozen = user.status === 'Frozen';
+  // Fallbacks below: the current /admin/users list endpoint only returns
+  // id, name, email, status, wallet_balance. These extra fields (balance,
+  // totalSent, totalReceived, joined, avatar, phone) aren't in that response
+  // yet, so we default them until the backend's /profile route data is wired in here.
+  const balance = user.balance ?? Number(user.wallet_balance) ?? 0;
+  const totalSent = user.totalSent ?? 0;
+  const totalReceived = user.totalReceived ?? 0;
+  const joined = user.joined ?? '—';
+  const avatar = user.avatar ?? '';
+  const phone = user.phone ?? '—';
 
   return (
     <Screen nav="Users">
@@ -34,10 +44,10 @@ export default function UserDetail() {
 
       <div className="card" style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 14 }}>
-          <img className="avatar" style={{ width: 48, height: 48 }} src={user.avatar} alt={user.name} />
+          <img className="avatar" style={{ width: 48, height: 48 }} src={avatar} alt={user.name} />
           <div>
             <div style={{ fontSize: 16, fontWeight: 800 }}>{user.name}</div>
-            <div className="row-sub">Joined {user.joined}</div>
+            <div className="row-sub">Joined {joined}</div>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -47,22 +57,22 @@ export default function UserDetail() {
           </div>
           <div>
             <div className="stat-label">Phone</div>
-            <div style={{ fontSize: 13, fontWeight: 600 }}>{user.phone}</div>
+            <div style={{ fontSize: 13, fontWeight: 600 }}>{phone}</div>
           </div>
         </div>
       </div>
 
       <div className="balance-card">
         <div className="balance-label">Wallet Current Balance</div>
-        <div className="balance-value">${user.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+        <div className="balance-value">${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
         <div className="balance-split">
           <div>
             <div className="label">Total Sent</div>
-            <div className="val">${user.totalSent.toLocaleString()}</div>
+            <div className="val">${totalSent.toLocaleString()}</div>
           </div>
           <div>
             <div className="label">Total Received</div>
-            <div className="val">${user.totalReceived.toLocaleString()}</div>
+            <div className="val">${totalReceived.toLocaleString()}</div>
           </div>
         </div>
       </div>

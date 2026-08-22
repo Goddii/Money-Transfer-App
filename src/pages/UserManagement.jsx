@@ -1,15 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Search, Plus, ChevronRight } from 'lucide-react';
 import Screen from '../components/Screen';
 import StatusPill from '../components/StatusPill';
-import { setFilter, setQuery } from '../store/slices/usersSlice';
+import { setFilter, setQuery, fetchUsers } from '../store/slices/usersSlice';
 import { admin } from '../mockData';
 
 export default function UserManagement() {
   const dispatch = useDispatch();
   const { list, filter, query } = useSelector((s) => s.users);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   const filtered = useMemo(
     () =>
@@ -61,7 +65,7 @@ export default function UserManagement() {
           </div>
         )}
         {filtered.map((u) => (
-          <Link key={u.id} to={`/users/${u.id}`} className="list-row">
+          <Link key={u.id} to={`/admin/users/${u.id}`} className="list-row">
             <div className="list-left">
               <img className="avatar" style={{ width: 34, height: 34 }} src={u.avatar} alt={u.name} />
               <div>
