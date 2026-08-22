@@ -1,17 +1,24 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Screen from '../components/Screen';
-import { admin } from '../mockData';
+import { fetchPlatform, fetchRevenue } from '../store/slices/analyticsSlice';
+import { useEffect } from 'react';
 
 export default function PlatformAnalytics() {
+  const dispatch = useDispatch();
   const { platform } = useSelector((s) => s.analytics);
   const maxGrowth = Math.max(...platform.growthCurve, 1);
+
+  useEffect(() => {
+    dispatch(fetchPlatform());
+    dispatch(fetchRevenue());
+  }, [dispatch]);
 
   return (
     <Screen nav="Dashboard">
       <div className="page-eyebrow">Ecosystem Health</div>
       <div className="page-title-row">
         <div className="page-title">Platform Stats</div>
-        <img className="avatar" src={admin.avatar} alt={admin.name} />
+        <img className="avatar" src={platform.avatar} alt={platform.name} />
       </div>
 
       <div className="card" style={{ marginBottom: 12 }}>
