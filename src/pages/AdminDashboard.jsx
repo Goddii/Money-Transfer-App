@@ -1,20 +1,26 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Users as UsersIcon, ScrollText, BarChart3, ChevronRight, Receipt } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Screen from '../components/Screen';
 import StatCard from '../components/StatCard';
-import { admin } from '../mockData';
+import { fetchOverview } from '../store/slices/analyticsSlice';
+import { useEffect } from 'react';
 
 export default function AdminDashboard() {
+  const dispatch = useDispatch();
   const { overview } = useSelector((s) => s.analytics);
   const maxVol = Math.max(...overview.txVolume30d, 1);
+
+  useEffect(() => {
+    dispatch(fetchOverview());
+  }, [dispatch]);
 
   return (
     <Screen nav="Dashboard">
       <div className="page-eyebrow">Admin Portal</div>
       <div className="page-title-row">
         <div className="page-title">Overview</div>
-        <img className="avatar" src={admin.avatar} alt={admin.name} />
+        <img className="avatar" src={overview.avatar} alt={overview.name} />
       </div>
 
       <div className="stat-grid">
@@ -52,8 +58,8 @@ export default function AdminDashboard() {
               ${overview.collectedFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
           </span>
+          <ChevronRight size={18} color="var(--ink-500)" />
         </span>
-        <ChevronRight size={18} color="var(--ink-500)" />
       </button>
 
       <div className="section-title">Quick Links</div>
