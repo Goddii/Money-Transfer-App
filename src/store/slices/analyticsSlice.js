@@ -17,7 +17,21 @@ export const fetchPlatform = createAsyncThunk('analytics/fetchPlatform', async (
 });
 
 const initialState = {
-  overview: {},
+  overview: {
+    totalUsers: 0,
+    totalUsersDelta: '',
+    activeWallets: 0,
+    activeWalletsNote: '',
+    transactionsTotal: '0',
+    transactionsNote: '',
+    platformLiquidity: 0,
+    platformLiquidityNote: '',
+    txVolume30d: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    avgTxVolume: '$0.00',
+    collectedFees: 0,
+    avatar: '',
+    name: '',
+  },
   revenue: {
     monthRevenue: 0,
     monthRevenueDelta: '',
