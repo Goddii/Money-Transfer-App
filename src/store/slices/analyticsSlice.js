@@ -1,18 +1,31 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 
+// Backend sends money fields as pre-formatted strings like "$1,234.00".
+// This strips the formatting back down to a plain number for the UI to
+// re-format however each page needs.
+function parseMoney(value) {
+  if (typeof value === 'number') return value;
+  if (typeof value !== 'string') return 0;
+  const parsed = Number(value.replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export const fetchOverview = createAsyncThunk('analytics/fetchOverview', async () => {
-  const response = await api.get('/api/overview');
+  const response = await api.get('/v1/admin/overview');
   return response.data;
 });
 
 export const fetchRevenue = createAsyncThunk('analytics/fetchRevenue', async () => {
-  const response = await api.get('/api/revenue');
+  const response = await api.get('/v1/admin/revenue-analytics');
   return response.data;
 });
 
 export const fetchPlatform = createAsyncThunk('analytics/fetchPlatform', async () => {
-  const response = await api.get('/api/platform');
+  // NOTE: no backend route for this yet (/v1/admin/platform). This will
+  // 404 until that route is added -- PlatformAnalytics.jsx will just keep
+  // showing its default zero state until then.
+  const response = await api.get('/v1/admin/platform');
   return response.data;
 });
 
@@ -64,13 +77,47 @@ const analyticsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchOverview.fulfilled, (state, action) => {
-        state.overview = action.payload.overview || {};
+        const data = action.payload || {};
+        // Backend (GET /v1/admin/overview) currently only returns these four
+        // fields, flat (not nested under "overview"). Everything else stays
+        // at its safe default until the backend sends it.
+        state.overview = {
+          ...initialState.overview,
+          totalUsers: Number(data.total_users) || 0,
+          activeWallets: Number(data.active_wallets) || 0,
+          // platform_liquidity comes back as total dollars (e.g. "$1234.00");
+          // the UI renders it as "$__M", so convert to millions here.
+          platformLiquidity: +(parseMoney(data.platform_liquidity) / 1_000_000).toFixed(2),
+          collectedFees: parseMoney(data.collected_fees),
+        };
       })
       .addCase(fetchRevenue.fulfilled, (state, action) => {
-        state.revenue = { ...initialState.revenue, ...action.payload.revenue };
+        const data = action.payload || {};
+        const trend = (data.revenue_trend_months || []).map((m) => ({
+          month: m.month,
+          value: Number(m.revenue) || 0,
+        }));
+        const sourceAmounts = (data.revenue_by_source || []).map((s) => ({
+          label: s.source,
+          amount: parseMoney(s.amount),
+        }));
+        const sourceTotal = sourceAmounts.reduce((sum, s) => sum + s.amount, 0);
+        const bySource = sourceAmounts.map((s) => ({
+          ...s,
+          pct: sourceTotal > 0 ? Math.round((s.amount / sourceTotal) * 100) : 0,
+        }));
+
+        state.revenue = {
+          ...initialState.revenue,
+          // Backend doesn't return a single "this month" figure yet, so we
+          // sum the trend as a stand-in total until that's added.
+          monthRevenue: trend.reduce((sum, t) => sum + t.value, 0),
+          trend,
+          bySource,
+        };
       })
       .addCase(fetchPlatform.fulfilled, (state, action) => {
-        state.platform = { ...initialState.platform, ...action.payload.platform };
+        state.platform = { ...initialState.platform, ...(action.payload?.platform || {}) };
       });
   },
 });
