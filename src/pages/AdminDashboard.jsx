@@ -64,15 +64,15 @@ export default function AdminDashboard() {
 
       <div className="section-title">Quick Links</div>
       <div className="quicklink-grid">
-        <Link to="/users" className="quicklink">
+        <Link to="/admin/users" className="quicklink">
           <UsersIcon size={18} />
           Users
         </Link>
-        <Link to="/settings" className="quicklink">
+        <Link to="/admin/settings" className="quicklink">
           <ScrollText size={18} />
           Audit Logs
         </Link>
-        <Link to="/platform" className="quicklink">
+        <Link to="/admin/platform" className="quicklink">
           <BarChart3 size={18} />
           Stats
         </Link>
