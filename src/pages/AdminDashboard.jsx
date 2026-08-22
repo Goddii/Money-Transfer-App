@@ -6,27 +6,61 @@ import StatCard from '../components/StatCard';
 import { fetchOverview } from '../store/slices/analyticsSlice';
 import { useEffect } from 'react';
 
+const centerStyle = {
+  padding: '40px 0',
+  textAlign: 'center',
+  color: 'var(--ink-500)',
+  fontSize: 14,
+};
+
 export default function AdminDashboard() {
   const dispatch = useDispatch();
-  const { overview } = useSelector((s) => s.analytics);
+  const { overview, overviewLoading, overviewError, overviewLoaded } = useSelector((s) => s.analytics);
+  const adminUser = useSelector((s) => s.auth.user);
   const maxVol = Math.max(...overview.txVolume30d, 1);
 
   useEffect(() => {
     dispatch(fetchOverview());
   }, [dispatch]);
 
+  if (overviewError) {
+    return (
+      <Screen nav="Dashboard">
+        <div style={centerStyle}>
+          <div className="page-title" style={{ marginBottom: 8 }}>Unable to load dashboard</div>
+          <div style={{ fontSize: 13 }}>{overviewError}</div>
+          <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => dispatch(fetchOverview())}>Retry</button>
+        </div>
+      </Screen>
+    );
+  }
+
+  if (overviewLoading) {
+    return (
+      <Screen nav="Dashboard">
+        <div style={centerStyle}>Loading dashboard…</div>
+      </Screen>
+    );
+  }
+
+  const avatar = adminUser?.avatar_url || '';
+  const name = adminUser?.name || '';
+  // Backend overview does not return a transaction count; do not present the
+  // initial Redux '0' as authoritative financial data.
+  const txDisplay = overviewLoaded && overview.transactionsTotal === '0' ? '—' : overview.transactionsTotal;
+
   return (
     <Screen nav="Dashboard">
       <div className="page-eyebrow">Admin Portal</div>
       <div className="page-title-row">
         <div className="page-title">Overview</div>
-        <img className="avatar" src={overview.avatar} alt={overview.name} />
+        <img className="avatar" src={avatar} alt={name} />
       </div>
 
       <div className="stat-grid">
         <StatCard label="Total Users" value={overview.totalUsers.toLocaleString()} delta={overview.totalUsersDelta} />
         <StatCard label="Active Wallets" value={overview.activeWallets.toLocaleString()} delta={overview.activeWalletsNote} deltaTone="flat" />
-        <StatCard label="Platform TXs" value={overview.transactionsTotal} delta={overview.transactionsNote} deltaTone="flat" />
+        <StatCard label="Platform TXs" value={txDisplay} delta={overview.transactionsNote} deltaTone="flat" />
         <StatCard label="Platform Liquidity" value={`$${overview.platformLiquidity}M`} delta={overview.platformLiquidityNote} deltaTone="flat" />
       </div>
 

@@ -17,6 +17,8 @@ const initialState = {
   entries: [],
   typeFilter: 'All',
   statusFilter: 'Active',
+  loading: false,
+  error: null,
 };
 
 const auditSlice = createSlice({
@@ -31,18 +33,28 @@ const auditSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchAuditLog.fulfilled, (state, action) => {
-      const records = action.payload?.audit_log || [];
-      state.entries = records.map((r) => ({
-        id: r.tx_code,
-        status: r.status,
-        sender: r.sender_name,
-        receiver: r.receiver_name,
-        amount: parseMoney(r.amount),
-        fee: parseMoney(r.fee),
-        time: r.timestamp,
-      }));
-    });
+    builder
+      .addCase(fetchAuditLog.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAuditLog.fulfilled, (state, action) => {
+        state.loading = false;
+        const records = action.payload?.audit_log || [];
+        state.entries = records.map((r) => ({
+          id: r.tx_code,
+          status: r.status,
+          sender: r.sender_name,
+          receiver: r.receiver_name,
+          amount: parseMoney(r.amount),
+          fee: parseMoney(r.fee),
+          time: r.timestamp,
+        }));
+      })
+      .addCase(fetchAuditLog.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Failed to load audit log.';
+      });
   },
 });
 

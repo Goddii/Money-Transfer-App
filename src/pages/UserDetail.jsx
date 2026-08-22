@@ -2,32 +2,72 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Lock, Unlock, Pencil } from 'lucide-react';
 import Screen from '../components/Screen';
-import { toggleFreeze } from '../store/slices/usersSlice';
+import { toggleFreeze, fetchUserProfile } from '../store/slices/usersSlice';
 import { userTransactions } from '../mockData';
+import { parseMoney } from '../utils/format';
+import { useEffect } from 'react';
+
+const centerStyle = {
+  padding: '40px 0',
+  textAlign: 'center',
+  color: 'var(--ink-500)',
+  fontSize: 14,
+};
 
 export default function UserDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((s) => s.users.list.find((u) => String(u.id) === id));
+  const { profile, profileLoading, profileError } = useSelector((s) => s.users);
   const txs = userTransactions[id] || [];
 
+  useEffect(() => {
+    dispatch(fetchUserProfile(id));
+  }, [dispatch, id]);
+
+  if (profileLoading) {
+    return (
+      <Screen nav="Users">
+        <div style={centerStyle}>Loading user…</div>
+      </Screen>
+    );
+  }
+
+  if (profileError) {
+    // A 404 from the backend means the requested user does not exist.
+    if (profileError.status === 404) {
+      return (
+        <Screen nav="Users">
+          <div style={centerStyle}>User not found.</div>
+        </Screen>
+      );
+    }
+    return (
+      <Screen nav="Users">
+        <div style={centerStyle}>
+          <div className="page-title" style={{ marginBottom: 8 }}>Unable to load profile</div>
+          <div style={{ fontSize: 13 }}>{profileError.message}</div>
+          <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => dispatch(fetchUserProfile(id))}>Retry</button>
+        </div>
+      </Screen>
+    );
+  }
+
+  const user = profile;
   if (!user) {
     return (
       <Screen nav="Users">
-        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--ink-500)' }}>User not found.</div>
+        <div style={centerStyle}>User not found.</div>
       </Screen>
     );
   }
 
   const frozen = user.status === 'Frozen';
-  // Fallbacks below: the current /admin/users list endpoint only returns
-  // id, name, email, status, wallet_balance. These extra fields (balance,
-  // totalSent, totalReceived, joined, avatar, phone) aren't in that response
-  // yet, so we default them until the backend's /profile route data is wired in here.
-  const balance = user.balance ?? Number(user.wallet_balance) ?? 0;
-  const totalSent = user.totalSent ?? 0;
-  const totalReceived = user.totalReceived ?? 0;
+  // Backend /profile returns wallet_balance as a number string and
+  // total_sent/total_received as pre-formatted money strings.
+  const balance = Number(user.wallet_balance) || 0;
+  const totalSent = parseMoney(user.total_sent);
+  const totalReceived = parseMoney(user.total_received);
   const joined = user.joined ?? '—';
   const avatar = user.avatar ?? '';
   const phone = user.phone ?? '—';

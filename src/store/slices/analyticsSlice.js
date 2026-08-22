@@ -64,6 +64,15 @@ const initialState = {
     mostActive: [],
   },
   revenueRange: 'Month',
+  overviewLoading: false,
+  overviewError: null,
+  overviewLoaded: false,
+  revenueLoading: false,
+  revenueError: null,
+  revenueLoaded: false,
+  platformLoading: false,
+  platformError: null,
+  platformLoaded: false,
 };
 
 const analyticsSlice = createSlice({
@@ -76,7 +85,13 @@ const analyticsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchOverview.pending, (state) => {
+        state.overviewLoading = true;
+        state.overviewError = null;
+      })
       .addCase(fetchOverview.fulfilled, (state, action) => {
+        state.overviewLoading = false;
+        state.overviewLoaded = true;
         const data = action.payload || {};
         // Backend (GET /v1/admin/overview) currently only returns these four
         // fields, flat (not nested under "overview"). Everything else stays
@@ -91,7 +106,17 @@ const analyticsSlice = createSlice({
           collectedFees: parseMoney(data.collected_fees),
         };
       })
+      .addCase(fetchOverview.rejected, (state, action) => {
+        state.overviewLoading = false;
+        state.overviewError = action.error?.message || 'Failed to load dashboard data.';
+      })
+      .addCase(fetchRevenue.pending, (state) => {
+        state.revenueLoading = true;
+        state.revenueError = null;
+      })
       .addCase(fetchRevenue.fulfilled, (state, action) => {
+        state.revenueLoading = false;
+        state.revenueLoaded = true;
         const data = action.payload || {};
         const trend = (data.revenue_trend_months || []).map((m) => ({
           month: m.month,
@@ -116,8 +141,22 @@ const analyticsSlice = createSlice({
           bySource,
         };
       })
+      .addCase(fetchRevenue.rejected, (state, action) => {
+        state.revenueLoading = false;
+        state.revenueError = action.error?.message || 'Failed to load revenue data.';
+      })
+      .addCase(fetchPlatform.pending, (state) => {
+        state.platformLoading = true;
+        state.platformError = null;
+      })
       .addCase(fetchPlatform.fulfilled, (state, action) => {
+        state.platformLoading = false;
+        state.platformLoaded = true;
         state.platform = { ...initialState.platform, ...(action.payload?.platform || {}) };
+      })
+      .addCase(fetchPlatform.rejected, (state, action) => {
+        state.platformLoading = false;
+        state.platformError = action.error?.message || 'Failed to load platform data.';
       });
   },
 });

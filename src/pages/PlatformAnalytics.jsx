@@ -1,26 +1,37 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Screen from '../components/Screen';
-import { fetchPlatform, fetchRevenue } from '../store/slices/analyticsSlice';
-import { useEffect } from 'react';
 
 export default function PlatformAnalytics() {
-  const dispatch = useDispatch();
-  const { platform } = useSelector((s) => s.analytics);
-  const maxGrowth = Math.max(...platform.growthCurve, 1);
+  const { platform, platformLoaded } = useSelector((s) => s.analytics);
+  const adminUser = useSelector((s) => s.auth.user);
 
-  useEffect(() => {
-    dispatch(fetchPlatform());
-    dispatch(fetchRevenue());
-  }, [dispatch]);
+  const avatar = adminUser?.avatar_url || '';
+  const name = adminUser?.name || '';
 
   return (
     <Screen nav="Dashboard">
       <div className="page-eyebrow">Ecosystem Health</div>
       <div className="page-title-row">
         <div className="page-title">Platform Stats</div>
-        <img className="avatar" src={platform.avatar} alt={platform.name} />
+        <img className="avatar" src={avatar} alt={name} />
       </div>
 
+      {platformLoaded ? (
+        <PlatformContent platform={platform} />
+      ) : (
+        <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13, padding: '24px 0' }}>
+          Platform analytics are currently unavailable.
+        </div>
+      )}
+    </Screen>
+  );
+}
+
+function PlatformContent({ platform }) {
+  const maxGrowth = Math.max(...platform.growthCurve, 1);
+
+  return (
+    <>
       <div className="card" style={{ marginBottom: 12 }}>
         <div className="stat-label">Platform Vol. (Monthly)</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
@@ -57,7 +68,7 @@ export default function PlatformAnalytics() {
             No user activity yet.
           </div>
         )}
-        {platform.mostActive.map((u, i) => (
+        {platform.mostActive.map((u) => (
           <div key={u.name} className="list-row">
             <div className="list-left">
               <span
@@ -77,7 +88,7 @@ export default function PlatformAnalytics() {
           </div>
         ))}
       </div>
-    </Screen>
+    </>
   );
 }
 
