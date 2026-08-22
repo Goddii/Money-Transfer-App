@@ -1,9 +1,12 @@
 import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Shuffle } from 'lucide-react';
 import { navItems } from './navItems';
-import { admin } from '../mockData';
+import Avatar from '../common/Avatar';
 
 export default function Sidebar({ active }) {
+  const authUser = useSelector((s) => s.auth.user);
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -23,10 +26,10 @@ export default function Sidebar({ active }) {
       </nav>
 
       <div className="sidebar-footer">
-        <img className="avatar" src={admin.avatar} alt={admin.name} />
+        <Avatar name={authUser?.name || 'Admin'} size={34} />
         <div>
-          <div className="sidebar-footer-name">{admin.name}</div>
-          <div className="sidebar-footer-role">{admin.role}</div>
+          <div className="sidebar-footer-name">{authUser?.name || 'Admin'}</div>
+          <div className="sidebar-footer-role">{authUser?.role?.toUpperCase() || ''}</div>
         </div>
       </div>
     </aside>

@@ -1,15 +1,20 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Search, Plus, ChevronRight } from 'lucide-react';
-import Screen from '../components/Screen';
-import StatusPill from '../components/StatusPill';
-import { setFilter, setQuery } from '../store/slices/usersSlice';
-import { admin } from '../mockData';
+import Screen from '../../components/common/Screen';
+import StatusPill from '../../components/common/StatusPill';
+import Avatar from '../../components/common/Avatar';
+import { fetchUsers, setFilter, setQuery } from '../../features/admin/usersSlice';
 
 export default function UserManagement() {
   const dispatch = useDispatch();
-  const { list, filter, query } = useSelector((s) => s.users);
+  const { list, filter, query, status, error } = useSelector((s) => s.users);
+  const authUser = useSelector((s) => s.auth.user);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   const filtered = useMemo(
     () =>
@@ -29,7 +34,7 @@ export default function UserManagement() {
       <div className="page-eyebrow">User Management</div>
       <div className="page-title-row">
         <div className="page-title">Users</div>
-        <img className="avatar" src={admin.avatar} alt={admin.name} />
+        <Avatar name={authUser?.name || 'Admin'} />
       </div>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
@@ -55,7 +60,13 @@ export default function UserManagement() {
       </div>
 
       <div className="card">
-        {filtered.length === 0 && (
+        {status === 'loading' && (
+          <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>Loading users...</div>
+        )}
+        {status === 'failed' && (
+          <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--red-600)', fontSize: 13 }}>{error}</div>
+        )}
+        {status === 'succeeded' && filtered.length === 0 && (
           <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
             {list.length === 0 ? 'No users yet.' : 'No users match this search.'}
           </div>
@@ -63,7 +74,7 @@ export default function UserManagement() {
         {filtered.map((u) => (
           <Link key={u.id} to={`/users/${u.id}`} className="list-row">
             <div className="list-left">
-              <img className="avatar" style={{ width: 34, height: 34 }} src={u.avatar} alt={u.name} />
+              <Avatar name={u.name} size={34} />
               <div>
                 <div className="row-title">{u.name}</div>
                 <div className="row-sub">{u.email}</div>

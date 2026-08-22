@@ -1,15 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ChevronDown, ShieldCheck, Bell, Percent, Wrench, ChevronRight } from 'lucide-react';
-import Screen from '../components/Screen';
-import StatusPill from '../components/StatusPill';
-import { setTypeFilter, setStatusFilter } from '../store/slices/auditSlice';
-import { admin } from '../mockData';
+import { ShieldCheck, Bell, Percent, Wrench, ChevronRight } from 'lucide-react';
+import Screen from '../../components/common/Screen';
+import StatusPill from '../../components/common/StatusPill';
+import Avatar from '../../components/common/Avatar';
+import { fetchTransactions, setTypeFilter, setStatusFilter } from '../../features/admin/auditSlice';
+import { logout } from '../../features/auth/authSlice';
 
 export default function AdminSettings() {
   const dispatch = useDispatch();
-  const { entries, typeFilter, statusFilter } = useSelector((s) => s.audit);
+  const { entries, typeFilter, statusFilter, status } = useSelector((s) => s.audit);
+  const authUser = useSelector((s) => s.auth.user);
   const [maintenance, setMaintenance] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchTransactions());
+  }, [dispatch]);
+
+  const filtered = useMemo(
+    () =>
+      entries.filter((e) => {
+        const matchesType = typeFilter === 'All' || e.type === typeFilter;
+        const matchesStatus = statusFilter === 'All' || e.status === statusFilter;
+        return matchesType && matchesStatus;
+      }),
+    [entries, typeFilter, statusFilter]
+  );
 
   return (
     <Screen nav="Settings">
@@ -19,12 +35,12 @@ export default function AdminSettings() {
       </div>
 
       <div className="card" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img className="avatar" style={{ width: 44, height: 44 }} src={admin.avatar} alt={admin.name} />
+        <Avatar name={authUser?.name || 'Admin'} size={44} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 800 }}>{admin.name}</div>
-          <div className="row-sub">{admin.email}</div>
+          <div style={{ fontSize: 15, fontWeight: 800 }}>{authUser?.name || 'Admin'}</div>
+          <div className="row-sub">{authUser?.email}</div>
         </div>
-        <span className="pill pill-orange">{admin.role}</span>
+        <span className="pill pill-orange">{authUser?.role?.toUpperCase() || 'ADMIN'}</span>
       </div>
 
       <div className="page-eyebrow">System Ledger</div>
@@ -36,24 +52,27 @@ export default function AdminSettings() {
         <FilterChip
           label="Type"
           value={typeFilter}
-          options={['All', 'Transfer', 'Deposit', 'Fee']}
+          options={['All', 'transfer', 'deposit', 'fee']}
           onChange={(v) => dispatch(setTypeFilter(v))}
         />
         <FilterChip
           label="Status"
           value={statusFilter}
-          options={['Active', 'Completed', 'Pending', 'Failed']}
+          options={['All', 'Completed', 'Pending', 'Failed']}
           onChange={(v) => dispatch(setStatusFilter(v))}
         />
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-        {entries.length === 0 && (
+        {status === 'loading' && (
+          <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>Loading...</div>
+        )}
+        {status !== 'loading' && filtered.length === 0 && (
           <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
             No activity yet.
           </div>
         )}
-        {entries.map((e) => (
+        {filtered.map((e) => (
           <div key={e.id} className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 800 }}>{e.id}</span>
@@ -61,12 +80,12 @@ export default function AdminSettings() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <div>
-                <div className="stat-label">Sender</div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>{e.sender}</div>
+                <div className="stat-label">Sender Wallet</div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>#{e.senderWalletId ?? '—'}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div className="stat-label">Receiver</div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>{e.receiver}</div>
+                <div className="stat-label">Receiver Wallet</div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>#{e.receiverWalletId ?? '—'}</div>
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--ink-500)', fontWeight: 600 }}>
@@ -82,7 +101,7 @@ export default function AdminSettings() {
       <div className="card">
         <ConfigRow icon={ShieldCheck} label="Account Security" />
         <ConfigRow icon={Bell} label="Notifications" />
-        <ConfigRow icon={Percent} label="Fee Settings" trailing="0.25% fixed" />
+        <ConfigRow icon={Percent} label="Fee Settings" />
         <div className="list-row">
           <div className="list-left">
             <Wrench size={17} color="var(--ink-500)" />
@@ -90,6 +109,9 @@ export default function AdminSettings() {
           </div>
           <button className={`toggle ${maintenance ? 'on' : ''}`} onClick={() => setMaintenance((v) => !v)} />
         </div>
+        <button className="btn btn-danger-soft btn-block" style={{ marginTop: 14 }} onClick={() => dispatch(logout())}>
+          Log Out
+        </button>
       </div>
     </Screen>
   );

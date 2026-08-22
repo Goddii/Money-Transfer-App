@@ -1,5 +1,5 @@
-import BottomNav from './BottomNav';
-import Sidebar from './Sidebar';
+import BottomNav from '../navigation/BottomNav';
+import Sidebar from '../navigation/Sidebar';
 
 export default function Screen({ children, nav }) {
   return (
