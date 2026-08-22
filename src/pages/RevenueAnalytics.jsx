@@ -1,19 +1,23 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Screen from '../components/Screen';
-import { setRevenueRange } from '../store/slices/analyticsSlice';
-import { admin } from '../mockData';
+import { fetchRevenue } from '../store/slices/analyticsSlice';
+import { useEffect } from 'react';
 
 export default function RevenueAnalytics() {
   const dispatch = useDispatch();
   const { revenue, revenueRange } = useSelector((s) => s.analytics);
   const maxVal = Math.max(...revenue.trend.map((t) => t.value), 1);
 
+  useEffect(() => {
+    dispatch(fetchRevenue());
+  }, [dispatch]);
+
   return (
     <Screen nav="Audit Log">
       <div className="page-eyebrow">Fee Analytics</div>
       <div className="page-title-row">
         <div className="page-title">Revenue</div>
-        <img className="avatar" src={admin.avatar} alt={admin.name} />
+        <img className="avatar" src={revenue.avatar} alt={revenue.name} />
       </div>
 
       <div className="segment">
