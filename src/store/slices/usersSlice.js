@@ -2,22 +2,26 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
-  const response = await api.get('/api/users');
+  const response = await api.get('/v1/admin/users');
   return response.data;
 });
 
 export const toggleFreeze = createAsyncThunk('users/toggleFreeze', async (userId) => {
-  const response = await api.patch(`/api/users/${userId}/freeze`);
+  const response = await api.patch(`/v1/admin/users/${userId}/toggle-freeze`);
   return response.data;
 });
 
 export const updateUser = createAsyncThunk('users/updateUser', async ({ id, changes }) => {
-  const response = await api.patch(`/api/users/${id}`, changes);
+  // NOTE: no backend route for this yet (PATCH /v1/admin/users/:id).
+  // Left pointing at the sensible future path so this just needs the
+  // route added later rather than a frontend change too.
+  const response = await api.patch(`/v1/admin/users/${id}`, changes);
   return response.data;
 });
 
 export const removeUser = createAsyncThunk('users/removeUser', async (userId) => {
-  await api.delete(`/api/users/${userId}`);
+  // NOTE: no backend DELETE route for this yet.
+  await api.delete(`/v1/admin/users/${userId}`);
   return userId;
 });
 
@@ -42,6 +46,13 @@ const usersSlice = createSlice({
     builder
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.list = action.payload.users || [];
+      })
+      .addCase(toggleFreeze.fulfilled, (state, action) => {
+        const userId = action.meta.arg;
+        const user = state.list.find((u) => u.id === userId);
+        if (user && action.payload.status) {
+          user.status = action.payload.status;
+        }
       });
   },
 });
