@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Screen from '../components/Screen';
-import { fetchRevenue } from '../store/slices/analyticsSlice';
+import { fetchRevenue, setRevenueRange } from '../store/slices/analyticsSlice';
 import { useEffect } from 'react';
 
 export default function RevenueAnalytics() {
