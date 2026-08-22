@@ -1,8 +1,10 @@
-import { useState, useEffect, useSelector } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ChevronDown, ShieldCheck, Bell, Percent, Wrench, ChevronRight } from 'lucide-react';
 import Screen from '../components/Screen';
 import StatusPill from '../components/StatusPill';
 import { setTypeFilter, setStatusFilter, fetchAuditLog } from '../store/slices/auditSlice';
+import { admin } from '../mockData';
 
 export default function AdminSettings() {
   const dispatch = useDispatch();
