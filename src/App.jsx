@@ -8,6 +8,7 @@ import AdminSettings from './pages/AdminSettings'
 import PlatformAnalytics from './pages/PlatformAnalytics'
 import RevenueAnalytics from './pages/RevenueAnalytics'
 import UserManagement from './pages/UserManagement'
+import UserDetail from './pages/UserDetail'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/admin/platform" element={<PlatformAnalytics />} />
         <Route path="/admin/revenue" element={<RevenueAnalytics />} />
         <Route path="/admin/users" element={<UserManagement />} />
+        <Route path="/admin/users/:id" element={<UserDetail />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
