@@ -9,6 +9,8 @@ import PlatformAnalytics from './pages/PlatformAnalytics'
 import RevenueAnalytics from './pages/RevenueAnalytics'
 import UserManagement from './pages/UserManagement'
 import UserDetail from './pages/UserDetail'
+import Home from './pages/Home/Home'
+import Deposit from './pages/Deposit/Deposit'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
         <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute adminOnly><AdminSettings /></ProtectedRoute>} />
         <Route path="/admin/platform" element={<ProtectedRoute adminOnly><PlatformAnalytics /></ProtectedRoute>} />
