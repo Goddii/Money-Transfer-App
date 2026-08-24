@@ -4,28 +4,56 @@ import api from '../../utils/api'
 
 function Deposit() {
   const [amount, setAmount] = useState('')
+  const [phone, setPhone] = useState('')
   const [wallet, setWallet] = useState(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    api.get('/wallet').then(res => setWallet(res.data)).catch(err => console.log(err))
+    api.get('/wallet')
+      .then(res => setWallet(res.data.data.wallet))
+      .catch(err => setError(err.response?.data?.message || 'Unable to load your wallet.'))
   }, [])
+
+  const currency = wallet?.currency || 'KES'
+  const balance = wallet ? Number(wallet.balance) : 0
 
   async function handleDeposit(e) {
     e.preventDefault()
-    if (!amount || amount <= 0) {
+    setError('')
+    setSuccess('')
+
+    const numericAmount = Number(amount)
+    if (!numericAmount || numericAmount <= 0) {
       setError('Please enter a valid amount')
       return
     }
+    if (!Number.isInteger(numericAmount)) {
+      setError('Amount must be a whole number.')
+      return
+    }
+    if (!phone.trim()) {
+      setError('Please enter your M-Pesa phone number.')
+      return
+    }
+
+    setSubmitting(true)
     try {
-      await api.post('/wallet/deposit', { amount: parseFloat(amount) })
-      setSuccess(`KES ${amount} deposited successfully!`)
+      await api.post('/mpesa/stk-push', { amount: numericAmount, phone: phone.trim() })
+      setSuccess(`M-Pesa prompt sent to ${phone.trim()}. Enter your PIN to complete the deposit.`)
       setAmount('')
-      api.get('/wallet').then(res => setWallet(res.data))
+      setPhone('')
+      // The wallet is credited only after Safaricom confirms the payment
+      // through the backend callback, so refresh in case it has landed.
+      api.get('/wallet')
+        .then(res => setWallet(res.data.data.wallet))
+        .catch(() => {})
     } catch (err) {
-      setError(err.response?.data?.error || 'Deposit failed. Try again.')
+      setError(err.response?.data?.message || 'Deposit failed. Try again.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -39,14 +67,16 @@ function Deposit() {
 
       <div style={styles.balanceCard}>
         <p style={styles.balanceLabel}>Current Balance</p>
-        <h2 style={styles.balance}>KES {wallet?.balance?.toLocaleString() || '0.00'}</h2>
+        <h2 style={styles.balance}>
+          {currency} {balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </h2>
       </div>
 
       <form onSubmit={handleDeposit} style={styles.form}>
         <div style={styles.inputGroup}>
           <label style={styles.label}>Enter Amount</label>
           <div style={styles.amountWrapper}>
-            <span style={styles.currency}>KES</span>
+            <span style={styles.currency}>{currency}</span>
             <input
               type="number"
               value={amount}
@@ -54,9 +84,22 @@ function Deposit() {
               placeholder="0.00"
               style={styles.amountInput}
               min="1"
+              step="1"
               required
             />
           </div>
+        </div>
+
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>M-Pesa Phone Number</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            placeholder="e.g. 0712345678"
+            style={styles.textInput}
+            required
+          />
         </div>
 
         <div style={styles.quickAmounts}>
@@ -65,7 +108,7 @@ function Deposit() {
               key={amt}
               type="button"
               onClick={() => setAmount(amt)}
-              style={amount == amt ? styles.quickBtnActive : styles.quickBtn}
+              style={Number(amount) === amt ? styles.quickBtnActive : styles.quickBtn}
             >
               {amt.toLocaleString()}
             </button>
@@ -75,7 +118,9 @@ function Deposit() {
         {error && <p style={styles.error}>{error}</p>}
         {success && <p style={styles.success}>{success}</p>}
 
-        <button type="submit" style={styles.button}>Deposit Funds</button>
+        <button type="submit" style={styles.button} disabled={submitting}>
+          {submitting ? 'Sending…' : 'Deposit Funds'}
+        </button>
       </form>
 
       <div style={styles.bottomNav}>
@@ -102,6 +147,7 @@ const styles = {
   amountWrapper: { display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '12px', padding: '1rem 1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
   currency: { color: '#666', fontSize: '1.2rem', marginRight: '0.5rem' },
   amountInput: { flex: 1, border: 'none', outline: 'none', fontSize: '2rem', fontWeight: '700', color: '#0a0a1a', background: 'transparent' },
+  textInput: { padding: '1rem 1.5rem', border: 'none', outline: 'none', fontSize: '1rem', color: '#0a0a1a', background: '#fff', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
   quickAmounts: { display: 'flex', gap: '0.75rem', flexWrap: 'wrap' },
   quickBtn: { padding: '0.5rem 1rem', border: '1px solid #ddd', borderRadius: '20px', background: '#fff', cursor: 'pointer', fontSize: '0.9rem', color: '#333' },
   quickBtnActive: { padding: '0.5rem 1rem', border: '1px solid #00c896', borderRadius: '20px', background: '#00c896', cursor: 'pointer', fontSize: '0.9rem', color: '#fff' },

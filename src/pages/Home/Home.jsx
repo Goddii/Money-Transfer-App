@@ -7,12 +7,36 @@ function Home() {
   const { user } = useSelector(state => state.auth)
   const [wallet, setWallet] = useState(null)
   const [transactions, setTransactions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
-    api.get('/wallet').then(res => setWallet(res.data)).catch(err => console.log(err))
-    api.get('/transactions').then(res => setTransactions(res.data)).catch(err => console.log(err))
+    let active = true
+
+    async function load() {
+      try {
+        const [walletRes, txRes] = await Promise.all([
+          api.get('/wallet'),
+          api.get('/transactions'),
+        ])
+        if (!active) return
+        setWallet(walletRes.data.data.wallet)
+        setTransactions(txRes.data.data.transactions || [])
+      } catch (err) {
+        if (!active) return
+        setError(err.response?.data?.message || 'Unable to load your account. Please try again.')
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    load()
+    return () => { active = false }
   }, [])
+
+  const currency = wallet?.currency || 'KES'
+  const balance = wallet ? Number(wallet.balance) : 0
 
   return (
     <div style={styles.container}>
@@ -27,13 +51,15 @@ function Home() {
       <div style={styles.walletCard}>
         <p style={styles.walletLabel}>Available Balance</p>
         <h1 style={styles.balance}>
-          KES {wallet?.balance?.toLocaleString() || '0.00'}
+          {currency} {balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </h1>
         <div style={styles.walletFooter}>
           <span style={styles.walletName}>Vyloc Wallet</span>
-          <span style={styles.walletStatus}>USD • Active</span>
+          <span style={styles.walletStatus}>{currency} • Active</span>
         </div>
       </div>
+
+      {error && <p style={styles.error}>{error}</p>}
 
       <div style={styles.actions}>
         <button onClick={() => navigate('/send')} style={styles.actionBtn}>
@@ -59,21 +85,31 @@ function Home() {
           <h3 style={styles.sectionTitle}>Recent Transactions</h3>
           <button onClick={() => navigate('/transactions')} style={styles.seeAll}>See All</button>
         </div>
-        {transactions.length === 0 ? (
+        {loading ? (
+          <p style={styles.empty}>Loading…</p>
+        ) : transactions.length === 0 ? (
           <p style={styles.empty}>No transactions yet.</p>
         ) : (
-          transactions.slice(0, 5).map(tx => (
-            <div key={tx.id} style={styles.txRow}>
-              <div style={styles.txAvatar}>{tx.name?.[0] || 'T'}</div>
-              <div style={styles.txInfo}>
-                <p style={styles.txName}>{tx.name || 'Transaction'}</p>
-                <p style={styles.txType}>{tx.type} • {tx.created_at}</p>
+          transactions.slice(0, 5).map(tx => {
+            const counterparty = tx.direction === 'out' ? tx.receiver : tx.sender
+            const name = counterparty?.name || 'Transaction'
+            const txType = tx.tx_type || 'Transaction'
+            const createdAt = tx.timestamp || ''
+            const amount = Number(tx.amount) || 0
+            const signed = tx.direction === 'out' ? -Math.abs(amount) : Math.abs(amount)
+            return (
+              <div key={tx.id} style={styles.txRow}>
+                <div style={styles.txAvatar}>{name?.[0] || 'T'}</div>
+                <div style={styles.txInfo}>
+                  <p style={styles.txName}>{name}</p>
+                  <p style={styles.txType}>{txType} • {createdAt}</p>
+                </div>
+                <p style={signed >= 0 ? styles.txAmountPos : styles.txAmountNeg}>
+                  {signed > 0 ? '+' : ''}{currency} {Math.abs(signed).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
               </div>
-              <p style={tx.amount > 0 ? styles.txAmountPos : styles.txAmountNeg}>
-                {tx.amount > 0 ? '+' : ''}KES {Math.abs(tx.amount).toLocaleString()}
-              </p>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
 
@@ -99,6 +135,7 @@ const styles = {
   walletFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   walletName: { color: '#8899aa', fontSize: '0.85rem' },
   walletStatus: { background: '#00c896', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.8rem' },
+  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
   actions: { display: 'flex', justifyContent: 'space-around', padding: '0 1.5rem 1.5rem' },
   actionBtn: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', background: '#fff', border: 'none', borderRadius: '12px', padding: '1rem', cursor: 'pointer', fontSize: '0.8rem', color: '#333', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', width: '70px' },
   actionIcon: { fontSize: '1.2rem' },
