@@ -11,6 +11,12 @@ import UserManagement from './pages/UserManagement'
 import UserDetail from './pages/UserDetail'
 import Home from './pages/Home/Home'
 import Deposit from './pages/Deposit/Deposit'
+import SendMoney from './pages/SendMoney/SendMoney'
+import TransferReview from './pages/TransferReview/TransferReview'
+import TransferSuccess from './pages/TransferSuccess/TransferSuccess'
+import Transactions from './pages/Transactions/Transactions'
+import Beneficiaries from './pages/Beneficiaries/Beneficiaries'
+import Profile from './pages/Profile/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -23,6 +29,15 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
+        {/* Authenticated user routes. These must be declared explicitly:
+            before they existed, /send, /transactions and /beneficiaries fell
+            through to the "*" catch-all below and redirected to Splash. */}
+        <Route path="/send" element={<ProtectedRoute><SendMoney /></ProtectedRoute>} />
+        <Route path="/transfer-review" element={<ProtectedRoute><TransferReview /></ProtectedRoute>} />
+        <Route path="/transfer-success" element={<ProtectedRoute><TransferSuccess /></ProtectedRoute>} />
+        <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
+        <Route path="/beneficiaries" element={<ProtectedRoute><Beneficiaries /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute adminOnly><AdminSettings /></ProtectedRoute>} />
         <Route path="/admin/platform" element={<ProtectedRoute adminOnly><PlatformAnalytics /></ProtectedRoute>} />
