@@ -1,14 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
+
+const POLL_INTERVAL_MS = 5000
 
 function Deposit() {
   const [amount, setAmount] = useState('')
   const [phone, setPhone] = useState('')
   const [wallet, setWallet] = useState(null)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  // The internal M-Pesa transaction id returned by the STK push. Used to poll
+  // the user-facing status endpoint; never the Daraja checkout_request_id.
+  const [depositId, setDepositId] = useState(null)
+  const pollRef = useRef(null)
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -17,13 +25,63 @@ function Deposit() {
       .catch(err => setError(err.response?.data?.message || 'Unable to load your wallet.'))
   }, [])
 
+  // Poll the deposit status until it reaches a terminal state. Timers are
+  // cleaned up on unmount or when a new deposit starts.
+  useEffect(() => {
+    if (!depositId) return
+
+    let active = true
+
+    const poll = async () => {
+      try {
+        // The axios instance already carries the `/api` prefix in its baseURL,
+        // so the path must be relative to it, exactly like every other call.
+        const res = await api.get(`/mpesa/transactions/${depositId}`)
+        if (!active) return
+        const t = res.data.data.transaction
+
+        if (t.status === 'Completed') {
+          setMessage(`KSh ${t.amount} added to your wallet.`)
+          setError('')
+          api.get('/wallet')
+            .then(r => setWallet(r.data.data.wallet))
+            .catch(() => {})
+          api.get('/transactions').catch(() => {})
+          clearInterval(pollRef.current)
+        } else if (t.status === 'Failed') {
+          setError('Your M-Pesa deposit failed. Please try again.')
+          setMessage('')
+          clearInterval(pollRef.current)
+        } else if (t.status === 'ReconciliationPending') {
+          setMessage('Confirming your payment...')
+        } else {
+          setMessage('Waiting for M-Pesa confirmation...')
+        }
+      } catch (err) {
+        // A 404 means the deposit is gone/forbidden; stop polling. Otherwise
+        // keep retrying so transient network errors don't strand the UI.
+        if (err.response && err.response.status === 404) {
+          clearInterval(pollRef.current)
+        }
+      }
+    }
+
+    poll()
+    pollRef.current = setInterval(poll, POLL_INTERVAL_MS)
+
+    return () => {
+      active = false
+      clearInterval(pollRef.current)
+    }
+  }, [depositId])
+
   const currency = wallet?.currency || 'KES'
   const balance = wallet ? Number(wallet.balance) : 0
 
   async function handleDeposit(e) {
     e.preventDefault()
     setError('')
-    setSuccess('')
+    setMessage('')
 
     const numericAmount = Number(amount)
     if (!numericAmount || numericAmount <= 0) {
@@ -41,15 +99,14 @@ function Deposit() {
 
     setSubmitting(true)
     try {
-      await api.post('/mpesa/stk-push', { amount: numericAmount, phone: phone.trim() })
-      setSuccess(`M-Pesa prompt sent to ${phone.trim()}. Enter your PIN to complete the deposit.`)
+      const res = await api.post('/mpesa/stk-push', { amount: numericAmount, phone: phone.trim() })
+      // The wallet is NOT credited here. We capture the returned deposit id and
+      // poll for Daraja confirmation instead of assuming success.
+      const deposit = res.data.data.deposit
+      setDepositId(deposit.id)
+      setMessage('Waiting for M-Pesa confirmation...')
       setAmount('')
       setPhone('')
-      // The wallet is credited only after Safaricom confirms the payment
-      // through the backend callback, so refresh in case it has landed.
-      api.get('/wallet')
-        .then(res => setWallet(res.data.data.wallet))
-        .catch(() => {})
     } catch (err) {
       setError(err.response?.data?.message || 'Deposit failed. Try again.')
     } finally {
@@ -116,7 +173,7 @@ function Deposit() {
         </div>
 
         {error && <p style={styles.error}>{error}</p>}
-        {success && <p style={styles.success}>{success}</p>}
+        {message && <p style={styles.success}>{message}</p>}
 
         <button type="submit" style={styles.button} disabled={submitting}>
           {submitting ? 'Sending…' : 'Deposit Funds'}
