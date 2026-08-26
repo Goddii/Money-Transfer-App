@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ShieldCheck, Bell, Percent, Wrench, ChevronRight } from 'lucide-react';
+import { ShieldCheck, Bell, Percent, Wrench, Download, ChevronRight } from 'lucide-react';
 import Screen from '../../components/common/Screen';
-import StatusPill from '../../components/common/StatusPill';
 import Avatar from '../../components/common/Avatar';
-import { fetchTransactions, setTypeFilter, setStatusFilter } from '../../features/admin/auditSlice';
+import { fetchTransactions } from '../../features/admin/auditSlice';
 import { logout } from '../../features/auth/authSlice';
 
 export default function AdminSettings() {
   const dispatch = useDispatch();
-  const { entries, typeFilter, statusFilter, status } = useSelector((s) => s.audit);
+  const { entries } = useSelector((s) => s.audit);
   const authUser = useSelector((s) => s.auth.user);
   const [maintenance, setMaintenance] = useState(false);
 
@@ -17,15 +16,20 @@ export default function AdminSettings() {
     dispatch(fetchTransactions());
   }, [dispatch]);
 
-  const filtered = useMemo(
-    () =>
-      entries.filter((e) => {
-        const matchesType = typeFilter === 'All' || e.type === typeFilter;
-        const matchesStatus = statusFilter === 'All' || e.status === statusFilter;
-        return matchesType && matchesStatus;
-      }),
-    [entries, typeFilter, statusFilter]
-  );
+  const handleExport = () => {
+    const rows = [
+      ['Transaction ID', 'Status', 'Type', 'Sender Wallet', 'Receiver Wallet', 'Amount', 'Fee', 'Time'],
+      ...entries.map((e) => [e.id, e.status, e.type, e.senderWalletId ?? '', e.receiverWalletId ?? '', e.amount, e.fee, e.time]),
+    ];
+    const csv = rows.map((r) => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `platform-audit-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Screen nav="Settings">
@@ -43,61 +47,7 @@ export default function AdminSettings() {
         <span className="pill pill-orange">{authUser?.role?.toUpperCase() || 'ADMIN'}</span>
       </div>
 
-      <div className="page-eyebrow">System Ledger</div>
-      <div className="page-title-row">
-        <div className="page-title" style={{ fontSize: 20 }}>Audit Log</div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-        <FilterChip
-          label="Type"
-          value={typeFilter}
-          options={['All', 'transfer', 'deposit', 'fee']}
-          onChange={(v) => dispatch(setTypeFilter(v))}
-        />
-        <FilterChip
-          label="Status"
-          value={statusFilter}
-          options={['All', 'Completed', 'Pending', 'Failed']}
-          onChange={(v) => dispatch(setStatusFilter(v))}
-        />
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-        {status === 'loading' && (
-          <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>Loading...</div>
-        )}
-        {status !== 'loading' && filtered.length === 0 && (
-          <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
-            No activity yet.
-          </div>
-        )}
-        {filtered.map((e) => (
-          <div key={e.id} className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 13, fontWeight: 800 }}>{e.id}</span>
-              <StatusPill status={e.status} />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-              <div>
-                <div className="stat-label">Sender Wallet</div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>#{e.senderWalletId ?? '—'}</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div className="stat-label">Receiver Wallet</div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>#{e.receiverWalletId ?? '—'}</div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--ink-500)', fontWeight: 600 }}>
-              <span>Amt: ${e.amount.toFixed(2)}</span>
-              <span>Fee: ${e.fee.toFixed(2)}</span>
-              <span>{e.time}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="section-title">General Configuration</div>
+      <div className="section-title" style={{ marginTop: 0 }}>General Configuration</div>
       <div className="card">
         <ConfigRow icon={ShieldCheck} label="Account Security" />
         <ConfigRow icon={Bell} label="Notifications" />
@@ -109,23 +59,18 @@ export default function AdminSettings() {
           </div>
           <button className={`toggle ${maintenance ? 'on' : ''}`} onClick={() => setMaintenance((v) => !v)} />
         </div>
+        <button className="list-row" style={{ width: '100%', textAlign: 'left' }} onClick={handleExport}>
+          <div className="list-left">
+            <Download size={17} color="var(--ink-500)" />
+            <span className="row-title">Export Platform Audit</span>
+          </div>
+          <ChevronRight size={16} color="var(--ink-300)" />
+        </button>
         <button className="btn btn-danger-soft btn-block" style={{ marginTop: 14 }} onClick={() => dispatch(logout())}>
-          Log Out
+          Log Out Administrator
         </button>
       </div>
     </Screen>
-  );
-}
-
-function FilterChip({ label, value, options, onChange }) {
-  return (
-    <select className="select-chip" value={value} onChange={(e) => onChange(e.target.value)} style={{ appearance: 'none' }}>
-      {options.map((o) => (
-        <option key={o} value={o}>
-          {label}: {o}
-        </option>
-      ))}
-    </select>
   );
 }
 

@@ -5,6 +5,7 @@ import UserDetail from './pages/admin/UserDetail';
 import RevenueAnalytics from './pages/admin/RevenueAnalytics';
 import PlatformAnalytics from './pages/admin/PlatformAnalytics';
 import AdminSettings from './pages/admin/AdminSettings';
+import AuditLog from './pages/admin/AuditLog';
 import Login from './pages/auth/Login';
 import RequireAuth from './components/common/RequireAuth';
 
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/users/:id" element={<RequireAuth><UserDetail /></RequireAuth>} />
         <Route path="/revenue" element={<RequireAuth><RevenueAnalytics /></RequireAuth>} />
         <Route path="/platform" element={<RequireAuth><PlatformAnalytics /></RequireAuth>} />
+        <Route path="/audit-log" element={<RequireAuth><AuditLog /></RequireAuth>} />
         <Route path="/settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
       </Routes>
     </BrowserRouter>
