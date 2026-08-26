@@ -100,12 +100,12 @@ function SendMoney() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#f8f9fa', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: '#f2f4f7', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
   title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#0a0a1a' },
   searchWrapper: { padding: '0 1.5rem 1rem' },
-  search: { width: '100%', padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', background: '#fff' },
+  search: { width: '100%', padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', background: '#423e3e' },
   section: { padding: '0 1.5rem 1rem' },
   sectionLabel: { fontSize: '0.9rem', color: '#666', fontWeight: '500', marginBottom: '0.75rem' },
   beneficiaryList: { display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' },
