@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Search, Plus, ChevronRight } from 'lucide-react';
+import { Search, ChevronRight } from 'lucide-react';
 import Screen from '../../components/common/Screen';
 import StatusPill from '../../components/common/StatusPill';
 import Avatar from '../../components/common/Avatar';
@@ -37,7 +37,7 @@ export default function UserManagement() {
         <Avatar name={authUser?.name || 'Admin'} />
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+      <div style={{ marginBottom: 14 }}>
         <div className="search-bar">
           <Search size={16} color="var(--ink-500)" />
           <input
@@ -46,9 +46,6 @@ export default function UserManagement() {
             onChange={(e) => dispatch(setQuery(e.target.value))}
           />
         </div>
-        <button className="fab" title="Add user">
-          <Plus size={20} />
-        </button>
       </div>
 
       <div className="segment">

@@ -41,15 +41,6 @@ export const setUserActive = createAsyncThunk('users/setActive', async ({ id, is
   }
 });
 
-export const createUser = createAsyncThunk('users/create', async (payload, { rejectWithValue }) => {
-  try {
-    const res = await api.post('/admin/users', payload);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response?.data?.error || 'Failed to create user');
-  }
-});
-
 const usersSlice = createSlice({
   name: 'users',
   initialState: {
