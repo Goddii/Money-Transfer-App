@@ -2,6 +2,11 @@ import axios from 'axios'
 import store from '../store/store'
 import { logout } from '../store/authSlice'
 
+// The base URL is environment-driven so the same build can target a local
+// Flask instance or the deployed backend. It must include the `/api` prefix
+// because every Flask blueprint is registered under `/api/...`.
+// To point at the team's Render deployment, set in .env:
+//   VITE_API_URL=https://money-transfer-app-backend-7gor.onrender.com/api
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 })
