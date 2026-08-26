@@ -9,6 +9,7 @@ import SendMoney from './pages/SendMoney/SendMoney'
 import TransferReview from './pages/TransferReview/TransferReview'
 import TransferSuccess from './pages/TransferSuccess/TransferSuccess'
 import Transactions from './pages/Transactions/Transactions'
+import Profile from './pages/Profile/Profile'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/transfer-review" element={<ProtectedRoute><TransferReview /></ProtectedRoute>} />
         <Route path="/transfer-success" element={<ProtectedRoute><TransferSuccess /></ProtectedRoute>} />
         <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><div style={{padding:'2rem'}}>Admin - Coming soon</div></ProtectedRoute>} />
       </Routes>
     </Router>
