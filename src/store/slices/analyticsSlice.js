@@ -22,9 +22,6 @@ export const fetchRevenue = createAsyncThunk('analytics/fetchRevenue', async () 
 });
 
 export const fetchPlatform = createAsyncThunk('analytics/fetchPlatform', async () => {
-  // NOTE: no backend route for this yet (/v1/admin/platform). This will
-  // 404 until that route is added -- PlatformAnalytics.jsx will just keep
-  // showing its default zero state until then.
   const response = await api.get('/v1/admin/platform');
   return response.data;
 });
@@ -40,7 +37,7 @@ const initialState = {
     platformLiquidity: 0,
     platformLiquidityNote: '',
     txVolume30d: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    avgTxVolume: '$0.00',
+    avgTxVolume: 'KES 0.00',
     collectedFees: 0,
     avatar: '',
     name: '',
@@ -63,7 +60,6 @@ const initialState = {
     growthCurve: [],
     mostActive: [],
   },
-  revenueRange: 'Month',
   overviewLoading: false,
   overviewError: null,
   overviewLoaded: false,
@@ -78,11 +74,7 @@ const initialState = {
 const analyticsSlice = createSlice({
   name: 'analytics',
   initialState,
-  reducers: {
-    setRevenueRange(state, action) {
-      state.revenueRange = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchOverview.pending, (state) => {
@@ -93,16 +85,14 @@ const analyticsSlice = createSlice({
         state.overviewLoading = false;
         state.overviewLoaded = true;
         const data = action.payload || {};
-        // Backend (GET /v1/admin/overview) currently only returns these four
-        // fields, flat (not nested under "overview"). Everything else stays
-        // at its safe default until the backend sends it.
+        // Backend (GET /v1/admin/overview) returns these four fields flat.
+        // platform_liquidity/collected_fees come back as "KES 1234.00"; the UI
+        // re-formats them as KES, so keep the raw numeric value here.
         state.overview = {
           ...initialState.overview,
           totalUsers: Number(data.total_users) || 0,
           activeWallets: Number(data.active_wallets) || 0,
-          // platform_liquidity comes back as total dollars (e.g. "$1234.00");
-          // the UI renders it as "$__M", so convert to millions here.
-          platformLiquidity: +(parseMoney(data.platform_liquidity) / 1_000_000).toFixed(2),
+          platformLiquidity: parseMoney(data.platform_liquidity),
           collectedFees: parseMoney(data.collected_fees),
         };
       })
@@ -152,7 +142,9 @@ const analyticsSlice = createSlice({
       .addCase(fetchPlatform.fulfilled, (state, action) => {
         state.platformLoading = false;
         state.platformLoaded = true;
-        state.platform = { ...initialState.platform, ...(action.payload?.platform || {}) };
+        // Backend (GET /v1/admin/platform) returns the analytics flat, not
+        // nested under a "platform" key. Spread the real payload directly.
+        state.platform = { ...initialState.platform, ...(action.payload || {}) };
       })
       .addCase(fetchPlatform.rejected, (state, action) => {
         state.platformLoading = false;
@@ -161,5 +153,4 @@ const analyticsSlice = createSlice({
   },
 });
 
-export const { setRevenueRange } = analyticsSlice.actions;
 export default analyticsSlice.reducer;

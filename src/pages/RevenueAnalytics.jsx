@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Screen from '../components/Screen';
-import { fetchRevenue, setRevenueRange } from '../store/slices/analyticsSlice';
+import { fetchRevenue } from '../store/slices/analyticsSlice';
 import { useEffect } from 'react';
+import { formatKES } from '../utils/format';
 
 const centerStyle = {
   padding: '40px 0',
@@ -12,9 +13,11 @@ const centerStyle = {
 
 export default function RevenueAnalytics() {
   const dispatch = useDispatch();
-  const { revenue, revenueRange, revenueLoading, revenueError } = useSelector((s) => s.analytics);
+  const { revenue, revenueLoading, revenueError } = useSelector((s) => s.analytics);
   const adminUser = useSelector((s) => s.auth.user);
   const maxVal = Math.max(...revenue.trend.map((t) => t.value), 1);
+  const totalRevenue = revenue.monthRevenue;
+  const avgMonthly = revenue.trend.length ? totalRevenue / revenue.trend.length : 0;
 
   useEffect(() => {
     dispatch(fetchRevenue());
@@ -51,25 +54,21 @@ export default function RevenueAnalytics() {
         <img className="avatar" src={avatar} alt={name} />
       </div>
 
-      <div className="segment">
-        {['Week', 'Month', 'Quarter', 'Year'].map((r) => (
-          <button key={r} className={revenueRange === r ? 'active' : ''} onClick={() => dispatch(setRevenueRange(r))}>
-            {r}
-          </button>
-        ))}
+      <div style={{ fontSize: 12.5, color: 'var(--ink-500)', fontWeight: 600, marginBottom: 12 }}>
+        Monthly revenue trend
       </div>
 
       <div className="stat-grid">
         <div className="stat-card">
-          <div className="stat-label">This Month Revenue</div>
+          <div className="stat-label">Total Revenue</div>
           <div className="stat-value" style={{ color: 'var(--orange-600)' }}>
-            ${revenue.monthRevenue.toLocaleString()}
+            {formatKES(totalRevenue)}
           </div>
           <div className="stat-delta up">{revenue.monthRevenueDelta}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Avg Fee / TX</div>
-          <div className="stat-value">${revenue.avgFee.toFixed(2)}</div>
+          <div className="stat-label">Avg / Month</div>
+          <div className="stat-value">{formatKES(avgMonthly)}</div>
           <div className="stat-delta flat">{revenue.avgFeeNote}</div>
         </div>
       </div>
@@ -101,7 +100,7 @@ export default function RevenueAnalytics() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 13 }}>
               <span style={{ fontWeight: 700 }}>{s.label}</span>
               <span style={{ color: 'var(--ink-500)', fontWeight: 600 }}>
-                ${s.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} ({s.pct}%)
+                {formatKES(s.amount)} ({s.pct}%)
               </span>
             </div>
             <div style={{ height: 6, background: 'var(--surface)', borderRadius: 99 }}>

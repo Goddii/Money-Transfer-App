@@ -1,12 +1,52 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 import Screen from '../components/Screen';
+import { fetchPlatform } from '../store/slices/analyticsSlice';
+import { formatKES } from '../utils/format';
 
 export default function PlatformAnalytics() {
-  const { platform, platformLoaded } = useSelector((s) => s.analytics);
+  const dispatch = useDispatch();
+  const { platform, platformLoaded, platformLoading, platformError } = useSelector((s) => s.analytics);
   const adminUser = useSelector((s) => s.auth.user);
+
+  useEffect(() => {
+    dispatch(fetchPlatform());
+  }, [dispatch]);
 
   const avatar = adminUser?.avatar_url || '';
   const name = adminUser?.name || '';
+
+  if (platformError) {
+    return (
+      <Screen nav="Dashboard">
+        <div className="page-eyebrow">Ecosystem Health</div>
+        <div className="page-title-row">
+          <div className="page-title">Platform Stats</div>
+          <img className="avatar" src={avatar} alt={name} />
+        </div>
+        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 14 }}>
+          <div className="page-title" style={{ marginBottom: 8, fontSize: 16 }}>Unable to load platform analytics</div>
+          <div style={{ fontSize: 13 }}>{platformError}</div>
+          <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => dispatch(fetchPlatform())}>Retry</button>
+        </div>
+      </Screen>
+    );
+  }
+
+  if (platformLoading || !platformLoaded) {
+    return (
+      <Screen nav="Dashboard">
+        <div className="page-eyebrow">Ecosystem Health</div>
+        <div className="page-title-row">
+          <div className="page-title">Platform Stats</div>
+          <img className="avatar" src={avatar} alt={name} />
+        </div>
+        <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13, padding: '24px 0' }}>
+          Loading platform analytics…
+        </div>
+      </Screen>
+    );
+  }
 
   return (
     <Screen nav="Dashboard">
@@ -16,60 +56,64 @@ export default function PlatformAnalytics() {
         <img className="avatar" src={avatar} alt={name} />
       </div>
 
-      {platformLoaded ? (
-        <PlatformContent platform={platform} />
-      ) : (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13, padding: '24px 0' }}>
-          Platform analytics are currently unavailable.
-        </div>
-      )}
+      <PlatformContent platform={platform} />
     </Screen>
   );
 }
 
 function PlatformContent({ platform }) {
-  const maxGrowth = Math.max(...platform.growthCurve, 1);
+  const curve = platform.growthCurve || [];
+  const maxGrowth = Math.max(1, ...curve.map((c) => Number(c.value) || 0));
+  const delta = platform.volumeDelta;
+  const deltaText = delta == null ? '—' : `${delta > 0 ? '▲' : delta < 0 ? '▼' : ''} ${Math.abs(delta).toFixed(1)}%`;
+  const deltaClass = delta == null ? 'flat' : delta >= 0 ? 'up' : 'down';
 
   return (
     <>
       <div className="card" style={{ marginBottom: 12 }}>
-        <div className="stat-label">Platform Vol. (Monthly)</div>
+        <div className="stat-label">Platform Volume (Monthly)</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-          <div className="stat-value" style={{ fontSize: 26 }}>${platform.volumeMonthly}M</div>
-          <span className="stat-delta up">{platform.volumeDelta}</span>
+          <div className="stat-value" style={{ fontSize: 26 }}>{formatKES(platform.volumeMonthly)}</div>
+          <span className={`stat-delta ${deltaClass}`}>{deltaText}</span>
         </div>
       </div>
 
       <div className="stat-grid">
-        <StatBlock label="New Users (Mo)" value={platform.newUsersMo.toLocaleString()} note={platform.newUsersNote} />
-        <StatBlock label="Avg TX Size" value={`$${platform.avgTxSize}`} note={platform.avgTxSizeNote} />
+        <StatBlock label="New Users (Mo)" value={(platform.newUsersMo ?? 0).toLocaleString()} note={platform.newUsersNote} />
+        <StatBlock label="Avg TX Size" value={formatKES(platform.avgTxSize)} note={platform.avgTxSizeNote} />
       </div>
 
       <div className="card" style={{ marginBottom: 14 }}>
-        <div className="section-title" style={{ marginTop: 0 }}>User Growth Curve (Mo)</div>
-        <svg viewBox="0 0 300 70" width="100%" height="70" preserveAspectRatio="none">
-          <polyline
-            fill="none"
-            stroke="var(--orange-500)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            points={platform.growthCurve
-              .map((v, i) => `${(i / (platform.growthCurve.length - 1)) * 300},${70 - (v / maxGrowth) * 62}`)
-              .join(' ')}
-          />
-        </svg>
+        <div className="section-title" style={{ marginTop: 0 }}>Volume Curve (12 mo)</div>
+        {curve.length === 0 ? (
+          <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
+            No volume data yet.
+          </div>
+        ) : (
+          <svg viewBox="0 0 300 70" width="100%" height="70" preserveAspectRatio="none">
+            <polyline
+              fill="none"
+              stroke="var(--orange-500)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              points={curve
+                .map((c, i) => `${(i / (curve.length - 1)) * 300},${70 - ((Number(c.value) || 0) / maxGrowth) * 62}`)
+                .join(' ')}
+            />
+          </svg>
+        )}
       </div>
 
       <div className="section-title">Most Active Users</div>
       <div className="card">
-        {platform.mostActive.length === 0 && (
+        {(platform.mostActive || []).length === 0 && (
           <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
             No user activity yet.
           </div>
         )}
-        {platform.mostActive.map((u) => (
-          <div key={u.name} className="list-row">
+        {(platform.mostActive || []).map((u, idx) => (
+          <div key={u.id ?? idx} className="list-row">
             <div className="list-left">
               <span
                 style={{
@@ -77,14 +121,14 @@ function PlatformContent({ platform }) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800,
                 }}
               >
-                {u.rank}
+                {idx + 1}
               </span>
               <div>
                 <div className="row-title">{u.name}</div>
-                <div className="row-sub">{u.tx} txs</div>
+                <div className="row-sub">{u.transactions} txs</div>
               </div>
             </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--orange-600)' }}>{u.volume} volume</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--orange-600)' }}>{formatKES(u.volume)} vol</div>
           </div>
         ))}
       </div>
