@@ -16,7 +16,7 @@ export const fetchAuditLog = createAsyncThunk('audit/fetchAuditLog', async () =>
 const initialState = {
   entries: [],
   typeFilter: 'All',
-  statusFilter: 'Active',
+  statusFilter: 'All',
   loading: false,
   error: null,
 };

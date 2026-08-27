@@ -102,7 +102,7 @@ export default function AdminDashboard() {
           <UsersIcon size={18} />
           Users
         </Link>
-        <Link to="/admin/settings" className="quicklink">
+        <Link to="/admin/audit" className="quicklink">
           <ScrollText size={18} />
           Audit Logs
         </Link>
