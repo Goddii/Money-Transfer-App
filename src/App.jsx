@@ -4,7 +4,6 @@ import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
 import AdminDashboard from './pages/AdminDashboard'
-import AdminSettings from './pages/AdminSettings'
 import PlatformAnalytics from './pages/PlatformAnalytics'
 import RevenueAnalytics from './pages/RevenueAnalytics'
 import UserManagement from './pages/UserManagement'
@@ -40,7 +39,6 @@ function App() {
         <Route path="/beneficiaries" element={<ProtectedRoute><Beneficiaries /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/settings" element={<ProtectedRoute adminOnly><AdminSettings /></ProtectedRoute>} />
         <Route path="/admin/platform" element={<ProtectedRoute adminOnly><PlatformAnalytics /></ProtectedRoute>} />
         <Route path="/admin/revenue" element={<ProtectedRoute adminOnly><RevenueAnalytics /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute adminOnly><UserManagement /></ProtectedRoute>} />

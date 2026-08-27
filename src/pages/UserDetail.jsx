@@ -1,11 +1,20 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Lock, Unlock, Pencil } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, Lock, Unlock, Pencil, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Screen from '../components/Screen';
-import { toggleFreeze, fetchUserProfile } from '../store/slices/usersSlice';
-import { userTransactions } from '../mockData';
-import { parseMoney } from '../utils/format';
-import { useEffect } from 'react';
+import StatusPill from '../components/StatusPill';
+import {
+  toggleFreeze,
+  fetchUserProfile,
+  fetchUserTransactions,
+  updateUser,
+  clearUpdateError,
+  removeUser,
+  clearDeleteError,
+  resetDeleteSuccess,
+} from '../store/slices/usersSlice';
+import { parseMoney, formatKES } from '../utils/format';
 
 const centerStyle = {
   padding: '40px 0',
@@ -14,16 +23,106 @@ const centerStyle = {
   fontSize: 14,
 };
 
+function initials(name) {
+  return (name || '?').trim()[0]?.toUpperCase() || '?';
+}
+
+function splitName(name = '') {
+  const parts = name.trim().split(/\s+/);
+  const first_name = parts[0] || '';
+  const last_name = parts.slice(1).join(' ') || '';
+  return { first_name, last_name };
+}
+
 export default function UserDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { profile, profileLoading, profileError } = useSelector((s) => s.users);
-  const txs = userTransactions[id] || [];
+  const {
+    profile,
+    profileLoading,
+    profileError,
+    updateLoading,
+    updateError,
+    deleteLoading,
+    deleteError,
+    deleteSuccess,
+    transactions,
+    txLoading,
+    txError,
+    txPagination,
+  } = useSelector((s) => s.users);
+
+  const [txPage, setTxPage] = useState(1);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ first_name: '', last_name: '', phone_number: '', status: 'Active' });
+  const [editErrors, setEditErrors] = useState({});
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchUserProfile(id));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch(fetchUserTransactions({ userId: id, page: txPage }));
+  }, [dispatch, id, txPage]);
+
+  useEffect(() => {
+    if (deleteSuccess) {
+      dispatch(resetDeleteSuccess());
+      navigate('/admin/users');
+    }
+  }, [deleteSuccess, dispatch, navigate]);
+
+  // Edit modal pre-population
+  function openEdit() {
+    const { first_name, last_name } = splitName(profile?.name);
+    setEditForm({
+      first_name,
+      last_name,
+      phone_number: (profile?.phone || '').trim(),
+      status: profile?.status || 'Active',
+    });
+    setEditErrors({});
+    dispatch(clearUpdateError());
+    setEditOpen(true);
+  }
+
+  function validateEdit() {
+    const errs = {};
+    if (!editForm.first_name.trim()) errs.first_name = 'First name is required.';
+    if (!editForm.last_name.trim()) errs.last_name = 'Last name is required.';
+    if (editForm.status !== 'Active' && editForm.status !== 'Frozen') {
+      errs.status = 'Status must be Active or Frozen.';
+    }
+    setEditErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
+
+  async function handleUpdate(e) {
+    e.preventDefault();
+    if (!validateEdit()) return;
+    const changes = {
+      first_name: editForm.first_name.trim(),
+      last_name: editForm.last_name.trim(),
+      phone_number: editForm.phone_number.trim() || null,
+      status: editForm.status,
+    };
+    const result = await dispatch(updateUser({ id: profile.id, changes }));
+    if (updateUser.fulfilled.match(result)) {
+      setEditOpen(false);
+    }
+  }
+
+  function handleDelete() {
+    dispatch(clearDeleteError());
+    dispatch(removeUser(Number(id)));
+  }
+
+  function handleFreezeAndClose() {
+    dispatch(toggleFreeze(Number(id)));
+    setConfirmOpen(false);
+  }
 
   if (profileLoading) {
     return (
@@ -34,7 +133,6 @@ export default function UserDetail() {
   }
 
   if (profileError) {
-    // A 404 from the backend means the requested user does not exist.
     if (profileError.status === 404) {
       return (
         <Screen nav="Users">
@@ -63,14 +161,10 @@ export default function UserDetail() {
   }
 
   const frozen = user.status === 'Frozen';
-  // Backend /profile returns wallet_balance as a number string and
-  // total_sent/total_received as pre-formatted money strings.
-  const balance = Number(user.wallet_balance) || 0;
+  const balance = parseMoney(user.wallet_balance);
   const totalSent = parseMoney(user.total_sent);
   const totalReceived = parseMoney(user.total_received);
-  const joined = user.joined ?? '—';
-  const avatar = user.avatar ?? '';
-  const phone = user.phone ?? '—';
+  const phone = user.phone || '—';
 
   return (
     <Screen nav="Users">
@@ -84,10 +178,12 @@ export default function UserDetail() {
 
       <div className="card" style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 14 }}>
-          <img className="avatar" style={{ width: 48, height: 48 }} src={avatar} alt={user.name} />
+          <div className="avatar" style={{ width: 48, height: 48, background: 'var(--orange-50)', color: 'var(--orange-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {initials(user.name)}
+          </div>
           <div>
             <div style={{ fontSize: 16, fontWeight: 800 }}>{user.name}</div>
-            <div className="row-sub">Joined {joined}</div>
+            <div className="row-sub"><StatusPill status={user.status} /></div>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -104,15 +200,15 @@ export default function UserDetail() {
 
       <div className="balance-card">
         <div className="balance-label">Wallet Current Balance</div>
-        <div className="balance-value">${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+        <div className="balance-value">{formatKES(balance)}</div>
         <div className="balance-split">
           <div>
             <div className="label">Total Sent</div>
-            <div className="val">${totalSent.toLocaleString()}</div>
+            <div className="val">{formatKES(totalSent)}</div>
           </div>
           <div>
             <div className="label">Total Received</div>
-            <div className="val">${totalReceived.toLocaleString()}</div>
+            <div className="val">{formatKES(totalReceived)}</div>
           </div>
         </div>
       </div>
@@ -126,31 +222,180 @@ export default function UserDetail() {
           {frozen ? <Unlock size={15} /> : <Lock size={15} />}
           {frozen ? 'Unfreeze Account' : 'Freeze Account'}
         </button>
-        <button className="btn btn-outline btn-block">
+        <button className="btn btn-outline btn-block" onClick={openEdit}>
           <Pencil size={15} />
           Edit Profile
         </button>
       </div>
+      <button
+        className="btn btn-danger btn-block"
+        style={{ marginBottom: 14 }}
+        onClick={() => { dispatch(clearDeleteError()); setConfirmOpen(true); }}
+      >
+        <Trash2 size={15} />
+        Delete User
+      </button>
 
       <div className="section-title">Recent Transactions</div>
       <div className="card">
-        {txs.length === 0 && (
+        {txLoading ? (
           <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
-            No recent transactions.
+            Loading transactions…
           </div>
+        ) : txError ? (
+          <div style={{ padding: '16px 0', textAlign: 'center', color: '#c0392b', fontSize: 13 }}>{txError}</div>
+        ) : transactions.length === 0 ? (
+          <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
+            No transactions for this user.
+          </div>
+        ) : (
+          <>
+            {transactions.map((t) => {
+              const out = t.sender?.id === user.id;
+              const counterparty = out ? t.receiver : t.sender;
+              const name = counterparty?.name || (out ? 'External' : 'System');
+              const amount = parseMoney(t.amount);
+              const signed = out ? -Math.abs(amount) : Math.abs(amount);
+              const when = t.timestamp ? new Date(t.timestamp).toLocaleString() : '';
+              return (
+                <div key={t.id} className="list-row">
+                  <div className="list-left">
+                    <div className="avatar" style={{ width: 34, height: 34, background: 'var(--orange-50)', color: 'var(--orange-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {initials(name)}
+                    </div>
+                    <div>
+                      <div className="row-title">{name}</div>
+                      <div className="row-sub">{t.tx_type}{when ? ` • ${when}` : ''}</div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div className={`row-amount ${signed >= 0 ? 'pos' : 'neg'}`}>
+                      {signed >= 0 ? '+' : '-'}{formatKES(Math.abs(signed))}
+                    </div>
+                    <div className="row-sub">{t.status}</div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {txPagination && txPagination.pages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+                <button
+                  className="btn btn-outline"
+                  disabled={!txPagination.has_prev}
+                  onClick={() => setTxPage((p) => Math.max(1, p - 1))}
+                >
+                  <ChevronLeft size={15} /> Prev
+                </button>
+                <span style={{ fontSize: 12, color: 'var(--ink-500)' }}>
+                  Page {txPagination.page} of {txPagination.pages}
+                </span>
+                <button
+                  className="btn btn-outline"
+                  disabled={!txPagination.has_next}
+                  onClick={() => setTxPage((p) => p + 1)}
+                >
+                  Next <ChevronRight size={15} />
+                </button>
+              </div>
+            )}
+          </>
         )}
-        {txs.map((t, i) => (
-          <div key={i} className="list-row">
-            <div>
-              <div className="row-title">{t.name}</div>
-              <div className="row-sub">{t.type}</div>
-            </div>
-            <div className={`row-amount ${t.amount > 0 ? 'pos' : 'neg'}`}>
-              {t.amount > 0 ? '+' : '-'}${Math.abs(t.amount).toFixed(2)}
-            </div>
-          </div>
-        ))}
       </div>
+
+      {/* Edit modal */}
+      {editOpen && (
+        <div className="modal-overlay" onClick={() => !updateLoading && setEditOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="page-title" style={{ fontSize: 18 }}>Edit User</div>
+              <button className="icon-btn" onClick={() => setEditOpen(false)} disabled={updateLoading}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {updateError && (
+              <div className="alert alert-error" style={{ marginBottom: 12 }}>{updateError}</div>
+            )}
+
+            <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="form-row">
+                <label>First Name</label>
+                <input value={editForm.first_name} onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })} />
+                {editErrors.first_name && <span className="field-error">{editErrors.first_name}</span>}
+              </div>
+              <div className="form-row">
+                <label>Last Name</label>
+                <input value={editForm.last_name} onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })} />
+                {editErrors.last_name && <span className="field-error">{editErrors.last_name}</span>}
+              </div>
+              <div className="form-row">
+                <label>Phone (optional)</label>
+                <input value={editForm.phone_number} onChange={(e) => setEditForm({ ...editForm, phone_number: e.target.value })} />
+              </div>
+              <div className="form-row">
+                <label>Status</label>
+                <select
+                  value={editForm.status}
+                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                  style={{ border: '1px solid var(--line)', borderRadius: 10, padding: '10px 12px', fontSize: 14 }}
+                >
+                  <option value="Active">Active</option>
+                  <option value="Frozen">Frozen</option>
+                </select>
+                {editErrors.status && <span className="field-error">{editErrors.status}</span>}
+              </div>
+              <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                <button type="button" className="btn btn-outline btn-block" onClick={() => setEditOpen(false)} disabled={updateLoading}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary btn-block" disabled={updateLoading}>
+                  {updateLoading ? 'Saving…' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {confirmOpen && (
+        <div className="modal-overlay" onClick={() => !deleteLoading && setConfirmOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="page-title" style={{ fontSize: 18, color: '#c0392b' }}>Delete User</div>
+              <button className="icon-btn" onClick={() => setConfirmOpen(false)} disabled={deleteLoading}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: 13.5, color: 'var(--ink-700)', lineHeight: 1.5, margin: '0 0 12px' }}>
+              This action is <strong>permanent</strong>. Accounts with financial history
+              (transfers or deposits) cannot be deleted to preserve the audit trail. In that
+              case, freeze the account instead.
+            </p>
+
+            {deleteError && (
+              <div className="alert alert-error" style={{ marginBottom: 12 }}>{deleteError}</div>
+            )}
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn btn-outline btn-block" onClick={() => setConfirmOpen(false)} disabled={deleteLoading}>
+                Cancel
+              </button>
+              <button className="btn btn-danger btn-block" onClick={handleDelete} disabled={deleteLoading}>
+                {deleteLoading ? 'Deleting…' : 'Delete User'}
+              </button>
+            </div>
+
+            {deleteError && /financial history/i.test(deleteError) && (
+              <button className="btn btn-primary btn-block" style={{ marginTop: 10 }} onClick={handleFreezeAndClose} disabled={deleteLoading}>
+                <Lock size={15} /> Freeze Account Instead
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </Screen>
   );
 }

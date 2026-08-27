@@ -1,9 +1,10 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { Users as UsersIcon, ScrollText, BarChart3, ChevronRight, Receipt } from 'lucide-react';
+import { Users as UsersIcon, ScrollText, BarChart3, ChevronRight, Receipt, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Screen from '../components/Screen';
 import StatCard from '../components/StatCard';
 import { fetchOverview } from '../store/slices/analyticsSlice';
+import { formatKES } from '../utils/format';
 import { useEffect } from 'react';
 
 const centerStyle = {
@@ -61,7 +62,7 @@ export default function AdminDashboard() {
         <StatCard label="Total Users" value={overview.totalUsers.toLocaleString()} delta={overview.totalUsersDelta} />
         <StatCard label="Active Wallets" value={overview.activeWallets.toLocaleString()} delta={overview.activeWalletsNote} deltaTone="flat" />
         <StatCard label="Platform TXs" value={txDisplay} delta={overview.transactionsNote} deltaTone="flat" />
-        <StatCard label="Platform Liquidity" value={`$${overview.platformLiquidity}M`} delta={overview.platformLiquidityNote} deltaTone="flat" />
+        <StatCard label="Platform Liquidity" value={formatKES(overview.platformLiquidity)} delta={overview.platformLiquidityNote} deltaTone="flat" />
       </div>
 
       <div className="card" style={{ marginBottom: 12 }}>
@@ -89,7 +90,7 @@ export default function AdminDashboard() {
           <span style={{ textAlign: 'left' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--orange-600)' }}>Collected Fees This Month</div>
             <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-900)' }}>
-              ${overview.collectedFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              {formatKES(overview.collectedFees)}
             </div>
           </span>
           <ChevronRight size={18} color="var(--ink-500)" />
@@ -109,6 +110,10 @@ export default function AdminDashboard() {
         <Link to="/admin/platform" className="quicklink">
           <BarChart3 size={18} />
           Stats
+        </Link>
+        <Link to="/admin/revenue" className="quicklink">
+          <TrendingUp size={18} />
+          Revenue
         </Link>
       </div>
     </Screen>
