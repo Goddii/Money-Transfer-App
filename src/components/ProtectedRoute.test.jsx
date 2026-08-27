@@ -31,6 +31,30 @@ function renderRoute(store) {
   );
 }
 
+function renderUserRoute(store) {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={['/home']}>
+        <ProtectedRoute>
+          <div>secret user content</div>
+        </ProtectedRoute>
+      </MemoryRouter>
+    </Provider>
+  );
+}
+
+describe('ProtectedRoute user guard', () => {
+  it('redirects unauthenticated users away from a normal protected route', () => {
+    renderUserRoute(makeStore({ isAuthenticated: false, role: 'user' }));
+    expect(screen.queryByText('secret user content')).not.toBeInTheDocument();
+  });
+
+  it('renders a normal protected route for authenticated users', () => {
+    renderUserRoute(makeStore({ isAuthenticated: true, role: 'user' }));
+    expect(screen.getByText('secret user content')).toBeInTheDocument();
+  });
+});
+
 describe('ProtectedRoute admin guard', () => {
   it('redirects unauthenticated users away from admin content', () => {
     renderRoute(makeStore({ isAuthenticated: false, role: 'user' }));

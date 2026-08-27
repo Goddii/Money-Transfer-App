@@ -1,13 +1,23 @@
 import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Shuffle } from 'lucide-react';
 import { navItems } from './navItems';
+import { logout } from '../store/authSlice';
 
 export default function Sidebar({ active }) {
   const user = useSelector((s) => s.auth.user);
+  const dispatch = useDispatch();
   const name = user?.name || 'Administrator';
   const role = user?.role || '';
   const avatar = user?.avatar_url || '';
+
+  function handleLogout() {
+    // Reuses the single shared authSlice logout action so admin logout has the
+    // same effect as user logout: token + user state cleared, redirect to login.
+    dispatch(logout());
+    // replace: true so Back cannot return to an authenticated admin screen.
+    window.location.assign('/login');
+  }
 
   return (
     <aside className="sidebar">
@@ -39,6 +49,27 @@ export default function Sidebar({ active }) {
           <div className="sidebar-footer-name">{name}</div>
           <div className="sidebar-footer-role">{role}</div>
         </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          style={{
+            marginTop: 10,
+            width: '100%',
+            padding: '10px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'transparent',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: 8,
+            color: '#ff6b6b',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Logout
+        </button>
       </div>
     </aside>
   );
