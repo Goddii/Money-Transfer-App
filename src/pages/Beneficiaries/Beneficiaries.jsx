@@ -4,17 +4,13 @@ import api from '../../utils/api'
 
 // Beneficiary management for the authenticated user.
 //
-// This page exists because Home and SendMoney both link to /beneficiaries.
-// Without it those links fell through App.jsx's "*" catch-all and redirected
-// to the Splash screen.
-//
-// NOTE: the backend intentionally exposes no public user-search endpoint, and
-// POST /api/beneficiaries accepts only `beneficiary_user_id`. So a beneficiary
-// is added by their Vyloc user ID. If the team later adds a lookup endpoint,
-// only `handleAdd` needs to change.
+// The backend resolves a user-facing account identifier (phone number or email)
+// to the internal user id, so the user never has to know or type a Vyloc user
+// ID. The internal id is still returned in the beneficiary record and used by
+// SendMoney, but it is never shown to or requested from the user here.
 function Beneficiaries() {
   const [beneficiaries, setBeneficiaries] = useState([])
-  const [userId, setUserId] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -46,19 +42,25 @@ function Beneficiaries() {
     setError('')
     setSuccess('')
 
-    const numericId = Number(userId)
-    if (!Number.isInteger(numericId) || numericId <= 0) {
-      setError("Please enter the recipient's numeric Vyloc user ID.")
+    const value = identifier.trim()
+    if (!value) {
+      setError("Enter the recipient's phone number or email.")
       return
     }
 
+    // Pick the field the backend expects based on the identifier shape. The
+    // server still resolves this to the internal user id on its side.
+    const payload = value.includes('@')
+      ? { email: value }
+      : { phone_number: value }
+
     setSubmitting(true)
     try {
-      const res = await api.post('/beneficiaries', { beneficiary_user_id: numericId })
+      const res = await api.post('/beneficiaries', payload)
       const created = res.data.data.beneficiary
       setBeneficiaries(prev => [created, ...prev])
       setSuccess(`${created.name || 'Beneficiary'} added successfully.`)
-      setUserId('')
+      setIdentifier('')
     } catch (err) {
       // Backend returns clear messages for self-add (400), unknown user (404)
       // and duplicates (409).
@@ -90,16 +92,14 @@ function Beneficiaries() {
 
       <form onSubmit={handleAdd} style={styles.addCard}>
         <label style={styles.label}>Add a beneficiary</label>
-        <p style={styles.hint}>Enter the recipient&apos;s Vyloc user ID.</p>
+        <p style={styles.hint}>Enter the recipient&apos;s phone number or email.</p>
         <div style={styles.addRow}>
           <input
-            type="number"
-            value={userId}
-            onChange={e => setUserId(e.target.value)}
-            placeholder="e.g. 42"
+            type="text"
+            value={identifier}
+            onChange={e => setIdentifier(e.target.value)}
+            placeholder="e.g. 0712 345 678 or name@email.com"
             style={styles.input}
-            min="1"
-            step="1"
           />
           <button type="submit" style={styles.addBtn} disabled={submitting}>
             {submitting ? 'Adding…' : 'Add'}

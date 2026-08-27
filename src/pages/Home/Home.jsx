@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import api from '../../utils/api'
 import { parseMoney, formatKES } from '../../utils/format'
+import UserMenu from '../../components/UserMenu'
 
 function Home() {
   const { user } = useSelector(state => state.auth)
@@ -57,7 +58,7 @@ function Home() {
           <p style={styles.greeting}>Good morning,</p>
           <h2 style={styles.username}>{user?.first_name || 'User'}</h2>
         </div>
-        <div style={styles.avatar}>{user?.first_name?.[0] || 'U'}</div>
+        <UserMenu size={45} />
       </div>
 
       <div style={styles.walletCard}>
