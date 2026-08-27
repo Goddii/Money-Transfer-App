@@ -141,29 +141,29 @@ function Beneficiaries() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#f8f9fa', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
-  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#0a0a1a' },
-  addCard: { background: '#fff', borderRadius: '16px', padding: '1.25rem', margin: '0 1.5rem 1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  label: { fontSize: '0.95rem', color: '#0a0a1a', fontWeight: '600' },
-  hint: { fontSize: '0.8rem', color: '#666', margin: '0.25rem 0 0.75rem' },
+  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },
+  addCard: { background: 'var(--white)', borderRadius: '16px', padding: '1.25rem', margin: '0 1.5rem 1rem', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
+  label: { fontSize: '0.95rem', color: 'var(--ink-900)', fontWeight: '600' },
+  hint: { fontSize: '0.8rem', color: 'var(--ink-500)', margin: '0.25rem 0 0.75rem' },
   addRow: { display: 'flex', gap: '0.75rem' },
-  input: { flex: 1, padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none', minWidth: 0 },
-  addBtn: { padding: '0.8rem 1.5rem', background: '#00c896', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' },
-  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
-  success: { color: '#00c896', background: '#f0fff8', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
+  input: { flex: 1, padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '1rem', outline: 'none', minWidth: 0 },
+  addBtn: { padding: '0.8rem 1.5rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
+  success: { color: 'var(--green-600)', background: 'var(--green-100)', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
   list: { padding: '0 1.5rem' },
-  sectionLabel: { fontSize: '0.9rem', color: '#666', fontWeight: '600', margin: '0 0 0.5rem' },
-  row: { display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid #f0f0f0' },
-  avatar: { width: '40px', height: '40px', background: '#e8f8f3', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#00c896', flexShrink: 0 },
+  sectionLabel: { fontSize: '0.9rem', color: 'var(--ink-500)', fontWeight: '600', margin: '0 0 0.5rem' },
+  row: { display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid var(--line)' },
+  avatar: { width: '40px', height: '40px', background: 'var(--emerald-100)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: 'var(--emerald-600)', flexShrink: 0 },
   info: { flex: 1, minWidth: 0 },
-  name: { margin: 0, fontWeight: '600', fontSize: '0.95rem', color: '#0a0a1a' },
-  meta: { margin: 0, fontSize: '0.8rem', color: '#666', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  removeBtn: { background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', flexShrink: 0 },
-  empty: { color: '#666', textAlign: 'center', padding: '2rem 0' },
-  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: '#fff', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid #f0f0f0', zIndex: 100 },
-  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: '#999', textAlign: 'center', lineHeight: '1.4' }
+  name: { margin: 0, fontWeight: '600', fontSize: '0.95rem', color: 'var(--ink-900)' },
+  meta: { margin: 0, fontSize: '0.8rem', color: 'var(--ink-500)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  removeBtn: { background: 'none', border: 'none', color: 'var(--red-600)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', flexShrink: 0 },
+  empty: { color: 'var(--ink-500)', textAlign: 'center', padding: '2rem 0' },
+  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: 'var(--white)', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid var(--line)', zIndex: 100 },
+  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--ink-300)', textAlign: 'center', lineHeight: '1.4' }
 }
 
 export default Beneficiaries

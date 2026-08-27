@@ -44,8 +44,8 @@ export default function AdminDashboard() {
     );
   }
 
+  const name = [adminUser?.first_name, adminUser?.last_name].filter(Boolean).join(' ') || adminUser?.name || 'Administrator';
   const avatar = adminUser?.avatar_url || '';
-  const name = adminUser?.name || '';
   // Backend overview does not return a transaction count; do not present the
   // initial Redux '0' as authoritative financial data.
   const txDisplay = overviewLoaded && overview.transactionsTotal === '0' ? '—' : overview.transactionsTotal;
@@ -55,7 +55,13 @@ export default function AdminDashboard() {
       <div className="page-eyebrow">Admin Portal</div>
       <div className="page-title-row">
         <div className="page-title">Overview</div>
-        <img className="avatar" src={avatar} alt={name} />
+        {avatar ? (
+          <img className="avatar" src={avatar} alt={name} />
+        ) : (
+          <div className="avatar" style={{ background: 'var(--emerald-50)', color: 'var(--emerald-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+            {(name || 'A')[0]}
+          </div>
+        )}
       </div>
 
       <div className="stat-grid">
@@ -73,7 +79,7 @@ export default function AdminDashboard() {
         <svg viewBox="0 0 300 60" width="100%" height="60" preserveAspectRatio="none">
           <polyline
             fill="none"
-            stroke="var(--orange-500)"
+            stroke="var(--emerald-500)"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -86,9 +92,9 @@ export default function AdminDashboard() {
 
       <button className="fee-banner" style={{ width: '100%', border: 'none' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Receipt size={18} color="var(--orange-600)" />
+          <Receipt size={18} color="var(--emerald-600)" />
           <span style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--orange-600)' }}>Collected Fees This Month</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--emerald-600)' }}>Collected Fees This Month</div>
             <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-900)' }}>
               {formatKES(overview.collectedFees)}
             </div>

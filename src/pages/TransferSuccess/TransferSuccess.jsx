@@ -73,18 +73,18 @@ function TransferSuccess() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#f8f9fa', maxWidth: '430px', margin: '0 auto', padding: '3rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' },
-  successIcon: { width: '80px', height: '80px', background: '#00c896', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '2.5rem', marginBottom: '1.5rem' },
-  title: { fontSize: '1.8rem', fontWeight: '700', color: '#0a0a1a', margin: '0 0 0.5rem', textAlign: 'center' },
-  subtitle: { color: '#666', margin: '0 0 2rem', textAlign: 'center' },
-  detailsCard: { background: '#fff', borderRadius: '16px', padding: '1.5rem', width: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', marginBottom: '2rem' },
+  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', padding: '3rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  successIcon: { width: '80px', height: '80px', background: 'var(--green-600)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '2.5rem', marginBottom: '1.5rem' },
+  title: { fontSize: '1.8rem', fontWeight: '700', color: 'var(--ink-900)', margin: '0 0 0.5rem', textAlign: 'center' },
+  subtitle: { color: 'var(--ink-500)', margin: '0 0 2rem', textAlign: 'center' },
+  detailsCard: { background: 'var(--white)', borderRadius: '16px', padding: '1.5rem', width: '100%', boxShadow: '0 2px 8px rgba(15,18,38,0.06)', marginBottom: '2rem' },
   detailRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0' },
-  detailLabel: { margin: 0, color: '#666', fontSize: '0.9rem' },
-  detailValue: { margin: 0, color: '#0a0a1a', fontSize: '0.9rem', fontWeight: '600', textAlign: 'right', maxWidth: '60%' },
-  divider: { height: '1px', background: '#f0f0f0', margin: '0.25rem 0' },
+  detailLabel: { margin: 0, color: 'var(--ink-500)', fontSize: '0.9rem' },
+  detailValue: { margin: 0, color: 'var(--ink-900)', fontSize: '0.9rem', fontWeight: '600', textAlign: 'right', maxWidth: '60%' },
+  divider: { height: '1px', background: 'var(--line)', margin: '0.25rem 0' },
   actions: { display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' },
-  primaryBtn: { padding: '1rem', background: '#00c896', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
-  secondaryBtn: { padding: '1rem', background: '#fff', color: '#0a0a1a', border: '1px solid #ddd', borderRadius: '50px', fontSize: '1rem', cursor: 'pointer' }
+  primaryBtn: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
+  secondaryBtn: { padding: '1rem', background: 'var(--white)', color: 'var(--ink-900)', border: '1px solid var(--line)', borderRadius: '50px', fontSize: '1rem', cursor: 'pointer' }
 }
 
 export default TransferSuccess

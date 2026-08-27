@@ -1,13 +1,16 @@
 import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Shuffle } from 'lucide-react';
+import { Shuffle, LogOut } from 'lucide-react';
 import { navItems } from './navItems';
 import { logout } from '../store/authSlice';
 
 export default function Sidebar({ active }) {
   const user = useSelector((s) => s.auth.user);
   const dispatch = useDispatch();
-  const name = user?.name || 'Administrator';
+  const name =
+    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
+    user?.name ||
+    'Administrator';
   const role = user?.role || '';
   const avatar = user?.avatar_url || '';
 
@@ -41,7 +44,7 @@ export default function Sidebar({ active }) {
         {avatar ? (
           <img className="avatar" src={avatar} alt={name} />
         ) : (
-          <div className="avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, background: 'var(--orange-500)' }}>
+          <div className="avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, background: 'var(--emerald-500)' }}>
             {(name || 'A')[0]}
           </div>
         )}
@@ -49,25 +52,16 @@ export default function Sidebar({ active }) {
           <div className="sidebar-footer-name">{name}</div>
           <div className="sidebar-footer-role">{role}</div>
         </div>
+      </div>
+
+      <div className="sidebar-account-actions">
         <button
           type="button"
           onClick={handleLogout}
-          style={{
-            marginTop: 10,
-            width: '100%',
-            padding: '10px 12px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderRadius: 8,
-            color: '#ff6b6b',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
+          className="sidebar-logout"
+          aria-label="Log out of admin account"
         >
+          <LogOut size={16} />
           Logout
         </button>
       </div>

@@ -185,37 +185,37 @@ function SendMoney() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#f2f4f7', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
-  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#0a0a1a' },
+  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },
   searchWrapper: { padding: '0 1.5rem 1rem' },
-  // Dark search field kept from feature/user's styling commit; an explicit
-  // light text colour is set so the typed value stays legible on it.
-  search: { width: '100%', padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', background: '#423e3e', color: '#fff' },
+  // Search field aligned with the rest of the form inputs for consistent
+  // contrast and readability.
+  search: { width: '100%', padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', background: 'var(--white)', color: 'var(--ink-900)' },
   section: { padding: '0 1.5rem 1rem' },
-  sectionLabel: { fontSize: '0.9rem', color: '#666', fontWeight: '500', marginBottom: '0.75rem' },
+  sectionLabel: { fontSize: '0.9rem', color: 'var(--ink-500)', fontWeight: '500', marginBottom: '0.75rem' },
   beneficiaryList: { display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' },
   beneficiary: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', minWidth: '60px' },
   beneficiaryActive: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', minWidth: '60px', opacity: 1 },
-  beneficiaryAvatar: { width: '50px', height: '50px', background: '#e8f8f3', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#00c896', fontSize: '1.2rem', border: '2px solid transparent' },
-  beneficiaryAvatarActive: { width: '50px', height: '50px', background: '#e8f8f3', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#00c896', fontSize: '1.2rem', border: '2px solid #00c896' },
-  beneficiaryName: { margin: 0, fontSize: '0.75rem', color: '#333', textAlign: 'center' },
-  addLink: { background: 'none', border: 'none', color: '#00c896', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600', padding: '0.5rem 0' },
+  beneficiaryAvatar: { width: '50px', height: '50px', background: 'var(--emerald-100)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: 'var(--emerald-600)', fontSize: '1.2rem', border: '2px solid transparent' },
+  beneficiaryAvatarActive: { width: '50px', height: '50px', background: 'var(--emerald-100)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: 'var(--emerald-600)', fontSize: '1.2rem', border: '2px solid var(--emerald-500)' },
+  beneficiaryName: { margin: 0, fontSize: '0.75rem', color: 'var(--ink-700)', textAlign: 'center' },
+  addLink: { background: 'none', border: 'none', color: 'var(--emerald-500)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600', padding: '0.5rem 0' },
   form: { padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' },
-  amountCard: { background: '#fff', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  amountLabel: { color: '#666', margin: '0 0 1rem', fontSize: '0.9rem' },
+  amountCard: { background: 'var(--white)', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
+  amountLabel: { color: 'var(--ink-500)', margin: '0 0 1rem', fontSize: '0.9rem' },
   amountWrapper: { display: 'flex', alignItems: 'center', marginBottom: '0.5rem' },
-  currency: { fontSize: '1.5rem', fontWeight: '700', color: '#0a0a1a', marginRight: '0.5rem' },
-  amountInput: { flex: 1, border: 'none', outline: 'none', fontSize: '2.5rem', fontWeight: '700', color: '#0a0a1a', background: 'transparent', width: '100%' },
-  fee: { color: '#666', fontSize: '0.85rem', margin: '0.5rem 0 0.25rem' },
-  available: { color: '#666', fontSize: '0.85rem', margin: 0 },
-  button: { padding: '1rem', background: '#00c896', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
-  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
-  empty: { color: '#999', fontSize: '0.9rem' },
-  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: '#fff', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid #f0f0f0', zIndex: 100 },
-  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: '#999', textAlign: 'center', lineHeight: '1.4' },
-  navBtnActive: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: '#00c896', textAlign: 'center', lineHeight: '1.4', fontWeight: '600' }
+  currency: { fontSize: '1.5rem', fontWeight: '700', color: 'var(--ink-900)', marginRight: '0.5rem' },
+  amountInput: { flex: 1, border: 'none', outline: 'none', fontSize: '2.5rem', fontWeight: '700', color: 'var(--ink-900)', background: 'transparent', width: '100%' },
+  fee: { color: 'var(--ink-500)', fontSize: '0.85rem', margin: '0.5rem 0 0.25rem' },
+  available: { color: 'var(--ink-500)', fontSize: '0.85rem', margin: 0 },
+  button: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
+  empty: { color: 'var(--ink-300)', fontSize: '0.9rem' },
+  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: 'var(--white)', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid var(--line)', zIndex: 100 },
+  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--ink-300)', textAlign: 'center', lineHeight: '1.4' },
+  navBtnActive: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--emerald-500)', textAlign: 'center', lineHeight: '1.4', fontWeight: '600' }
 }
 
 export default SendMoney
