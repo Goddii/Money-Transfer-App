@@ -5,7 +5,6 @@ import { loginSuccess } from '../../store/authSlice'
 import api from '../../utils/api'
 
 function Login() {
-  const [tab, setTab] = useState('personal')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -35,10 +34,6 @@ function Login() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.tabs}>
-        <button onClick={() => setTab('personal')} style={tab === 'personal' ? styles.activeTab : styles.tab}>Personal</button>
-        <button onClick={() => setTab('admin')} style={tab === 'admin' ? styles.activeTab : styles.tab}>Admin</button>
-      </div>
       <div style={styles.content}>
         <h2 style={styles.title}>Welcome back</h2>
         <p style={styles.subtitle}>Enter your credentials to access your account</p>
@@ -65,25 +60,22 @@ function Login() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#fff', maxWidth: '430px', margin: '0 auto', padding: '2rem 1.5rem' },
-  tabs: { display: 'flex', background: '#f5f5f5', borderRadius: '10px', padding: '4px', marginBottom: '2rem' },
-  tab: { flex: 1, padding: '0.6rem', border: 'none', background: 'transparent', borderRadius: '8px', cursor: 'pointer', fontSize: '0.95rem', color: '#666' },
-  activeTab: { flex: 1, padding: '0.6rem', border: 'none', background: '#fff', borderRadius: '8px', cursor: 'pointer', fontSize: '0.95rem', color: '#000', fontWeight: '600', boxShadow: '0 1px 4px rgba(0,0,0,0.1)' },
+  container: { minHeight: '100vh', background: 'var(--white)', maxWidth: '430px', margin: '0 auto', padding: '2rem 1.5rem' },
   content: { paddingTop: '1rem' },
-  title: { fontSize: '1.8rem', fontWeight: '700', margin: '0 0 0.5rem', color: '#0a0a1a' },
-  subtitle: { color: '#666', margin: '0 0 2rem', fontSize: '0.95rem' },
+  title: { fontSize: '1.8rem', fontWeight: '700', margin: '0 0 0.5rem', color: 'var(--ink-900)' },
+  subtitle: { color: 'var(--ink-500)', margin: '0 0 2rem', fontSize: '0.95rem' },
   form: { display: 'flex', flexDirection: 'column', gap: '1.2rem' },
   inputGroup: { display: 'flex', flexDirection: 'column', gap: '0.4rem' },
-  label: { fontSize: '0.9rem', color: '#333', fontWeight: '500' },
-  input: { padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' },
-  passwordWrapper: { display: 'flex', alignItems: 'center', border: '1px solid #ddd', borderRadius: '10px', overflow: 'hidden' },
+  label: { fontSize: '0.9rem', color: 'var(--ink-700)', fontWeight: '500' },
+  input: { padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '1rem', outline: 'none' },
+  passwordWrapper: { display: 'flex', alignItems: 'center', border: '1px solid var(--line)', borderRadius: '10px', overflow: 'hidden' },
   passwordInput: { flex: 1, padding: '0.9rem 1rem', border: 'none', fontSize: '1rem', outline: 'none' },
   eyeBtn: { background: 'none', border: 'none', padding: '0.9rem', cursor: 'pointer', fontSize: '1rem' },
-  forgotLink: { color: '#00c896', fontSize: '0.9rem', textDecoration: 'none', textAlign: 'right' },
-  button: { padding: '1rem', background: '#00c896', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', marginTop: '0.5rem' },
-  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
-  footer: { textAlign: 'center', marginTop: '1.5rem', color: '#666', fontSize: '0.9rem' },
-  link: { color: '#00c896', textDecoration: 'none', fontWeight: '600' }
+  forgotLink: { color: 'var(--emerald-500)', fontSize: '0.9rem', textDecoration: 'none', textAlign: 'right' },
+  button: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', marginTop: '0.5rem' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
+  footer: { textAlign: 'center', marginTop: '1.5rem', color: 'var(--ink-500)', fontSize: '0.9rem' },
+  link: { color: 'var(--emerald-500)', textDecoration: 'none', fontWeight: '600' }
 }
 
 export default Login

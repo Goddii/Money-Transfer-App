@@ -14,7 +14,7 @@ export default function PlatformAnalytics() {
   }, [dispatch]);
 
   const avatar = adminUser?.avatar_url || '';
-  const name = adminUser?.name || '';
+  const name = [adminUser?.first_name, adminUser?.last_name].filter(Boolean).join(' ') || adminUser?.name || 'Administrator';
 
   if (platformError) {
     return (
@@ -22,7 +22,13 @@ export default function PlatformAnalytics() {
         <div className="page-eyebrow">Ecosystem Health</div>
         <div className="page-title-row">
           <div className="page-title">Platform Stats</div>
-          <img className="avatar" src={avatar} alt={name} />
+          {avatar ? (
+            <img className="avatar" src={avatar} alt={name} />
+          ) : (
+            <div className="avatar" style={{ background: 'var(--emerald-50)', color: 'var(--emerald-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+              {(name || 'A')[0]}
+            </div>
+          )}
         </div>
         <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 14 }}>
           <div className="page-title" style={{ marginBottom: 8, fontSize: 16 }}>Unable to load platform analytics</div>
@@ -39,7 +45,13 @@ export default function PlatformAnalytics() {
         <div className="page-eyebrow">Ecosystem Health</div>
         <div className="page-title-row">
           <div className="page-title">Platform Stats</div>
-          <img className="avatar" src={avatar} alt={name} />
+          {avatar ? (
+            <img className="avatar" src={avatar} alt={name} />
+          ) : (
+            <div className="avatar" style={{ background: 'var(--emerald-50)', color: 'var(--emerald-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+              {(name || 'A')[0]}
+            </div>
+          )}
         </div>
         <div className="card" style={{ textAlign: 'center', color: 'var(--ink-500)', fontSize: 13, padding: '24px 0' }}>
           Loading platform analytics…
@@ -93,7 +105,7 @@ function PlatformContent({ platform }) {
           <svg viewBox="0 0 300 70" width="100%" height="70" preserveAspectRatio="none">
             <polyline
               fill="none"
-              stroke="var(--orange-500)"
+              stroke="var(--emerald-500)"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -117,7 +129,7 @@ function PlatformContent({ platform }) {
             <div className="list-left">
               <span
                 style={{
-                  width: 22, height: 22, borderRadius: 6, background: 'var(--orange-50)', color: 'var(--orange-600)',
+                  width: 22, height: 22, borderRadius: 6, background: 'var(--emerald-50)', color: 'var(--emerald-600)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800,
                 }}
               >
@@ -128,7 +140,7 @@ function PlatformContent({ platform }) {
                 <div className="row-sub">{u.transactions} txs</div>
               </div>
             </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--orange-600)' }}>{formatKES(u.volume)} vol</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--emerald-600)' }}>{formatKES(u.volume)} vol</div>
           </div>
         ))}
       </div>

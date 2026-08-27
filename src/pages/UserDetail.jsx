@@ -178,7 +178,7 @@ export default function UserDetail() {
 
       <div className="card" style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 14 }}>
-          <div className="avatar" style={{ width: 48, height: 48, background: 'var(--orange-50)', color: 'var(--orange-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="avatar" style={{ width: 48, height: 48, background: 'var(--emerald-50)', color: 'var(--emerald-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {initials(user.name)}
           </div>
           <div>
@@ -243,7 +243,7 @@ export default function UserDetail() {
             Loading transactions…
           </div>
         ) : txError ? (
-          <div style={{ padding: '16px 0', textAlign: 'center', color: '#c0392b', fontSize: 13 }}>{txError}</div>
+           <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--red-600)', fontSize: 13 }}>{txError}</div>
         ) : transactions.length === 0 ? (
           <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
             No transactions for this user.
@@ -260,7 +260,7 @@ export default function UserDetail() {
               return (
                 <div key={t.id} className="list-row">
                   <div className="list-left">
-                    <div className="avatar" style={{ width: 34, height: 34, background: 'var(--orange-50)', color: 'var(--orange-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="avatar" style={{ width: 34, height: 34, background: 'var(--emerald-50)', color: 'var(--emerald-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {initials(name)}
                     </div>
                     <div>
@@ -363,7 +363,7 @@ export default function UserDetail() {
         <div className="modal-overlay" onClick={() => !deleteLoading && setConfirmOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <div className="page-title" style={{ fontSize: 18, color: '#c0392b' }}>Delete User</div>
+              <div className="page-title" style={{ fontSize: 18, color: 'var(--red-600)' }}>Delete User</div>
               <button className="icon-btn" onClick={() => setConfirmOpen(false)} disabled={deleteLoading}>
                 <X size={18} />
               </button>

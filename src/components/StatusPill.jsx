@@ -7,5 +7,5 @@ const tone = {
 };
 
 export default function StatusPill({ status }) {
-  return <span className={`pill ${tone[status] || 'pill-orange'}`}>{status}</span>;
+  return <span className={`pill ${tone[status] || 'pill-emerald'}`}>{status}</span>;
 }

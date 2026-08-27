@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
+import { formatKES } from '../../utils/format'
 
 const POLL_INTERVAL_MS = 5000
 
@@ -41,7 +42,7 @@ function Deposit() {
         const t = res.data.data.transaction
 
         if (t.status === 'Completed') {
-          setMessage(`KSh ${t.amount} added to your wallet.`)
+          setMessage(`${formatKES(t.amount)} added to your wallet.`)
           setError('')
           api.get('/wallet')
             .then(r => setWallet(r.data.data.wallet))
@@ -191,28 +192,28 @@ function Deposit() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#f8f9fa', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
-  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#0a0a1a' },
-  balanceCard: { background: '#fff', borderRadius: '16px', padding: '1.5rem', margin: '0 1.5rem 1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  balanceLabel: { color: '#666', margin: '0 0 0.25rem', fontSize: '0.85rem' },
-  balance: { margin: 0, fontSize: '1.8rem', fontWeight: '700', color: '#0a0a1a' },
+  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },
+  balanceCard: { background: 'var(--white)', borderRadius: '16px', padding: '1.5rem', margin: '0 1.5rem 1.5rem', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
+  balanceLabel: { color: 'var(--ink-500)', margin: '0 0 0.25rem', fontSize: '0.85rem' },
+  balance: { margin: 0, fontSize: '1.8rem', fontWeight: '700', color: 'var(--ink-900)' },
   form: { padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' },
   inputGroup: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
-  label: { fontSize: '0.9rem', color: '#333', fontWeight: '500' },
-  amountWrapper: { display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '12px', padding: '1rem 1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  currency: { color: '#666', fontSize: '1.2rem', marginRight: '0.5rem' },
-  amountInput: { flex: 1, border: 'none', outline: 'none', fontSize: '2rem', fontWeight: '700', color: '#0a0a1a', background: 'transparent' },
-  textInput: { padding: '1rem 1.5rem', border: 'none', outline: 'none', fontSize: '1rem', color: '#0a0a1a', background: '#fff', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
+  label: { fontSize: '0.9rem', color: 'var(--ink-700)', fontWeight: '500' },
+  amountWrapper: { display: 'flex', alignItems: 'center', background: 'var(--white)', borderRadius: '12px', padding: '1rem 1.5rem', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
+  currency: { color: 'var(--ink-500)', fontSize: '1.2rem', marginRight: '0.5rem' },
+  amountInput: { flex: 1, border: 'none', outline: 'none', fontSize: '2rem', fontWeight: '700', color: 'var(--ink-900)', background: 'transparent' },
+  textInput: { padding: '1rem 1.5rem', border: 'none', outline: 'none', fontSize: '1rem', color: 'var(--ink-900)', background: 'var(--white)', borderRadius: '12px', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
   quickAmounts: { display: 'flex', gap: '0.75rem', flexWrap: 'wrap' },
-  quickBtn: { padding: '0.5rem 1rem', border: '1px solid #ddd', borderRadius: '20px', background: '#fff', cursor: 'pointer', fontSize: '0.9rem', color: '#333' },
-  quickBtnActive: { padding: '0.5rem 1rem', border: '1px solid #00c896', borderRadius: '20px', background: '#00c896', cursor: 'pointer', fontSize: '0.9rem', color: '#fff' },
-  button: { padding: '1rem', background: '#00c896', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
-  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
-  success: { color: '#00c896', background: '#f0fff8', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
-  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: '#fff', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid #f0f0f0', zIndex: 100 },
-  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: '#999', textAlign: 'center', lineHeight: '1.4' }
+  quickBtn: { padding: '0.5rem 1rem', border: '1px solid var(--line)', borderRadius: '20px', background: 'var(--white)', cursor: 'pointer', fontSize: '0.9rem', color: 'var(--ink-700)' },
+  quickBtnActive: { padding: '0.5rem 1rem', border: '1px solid var(--emerald-500)', borderRadius: '20px', background: 'var(--emerald-500)', cursor: 'pointer', fontSize: '0.9rem', color: '#fff' },
+  button: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
+  success: { color: 'var(--green-600)', background: 'var(--green-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
+  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: 'var(--white)', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid var(--line)', zIndex: 100 },
+  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--ink-300)', textAlign: 'center', lineHeight: '1.4' }
 }
 
 export default Deposit

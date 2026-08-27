@@ -53,7 +53,7 @@ export default function UserMenu({ size = 38 }) {
           width: size,
           height: size,
           borderRadius: '50%',
-          background: '#00c896',
+          background: 'var(--emerald-500)',
           color: '#fff',
           border: 'none',
           cursor: 'pointer',
@@ -77,7 +77,7 @@ export default function UserMenu({ size = 38 }) {
             top: size + 8,
             right: 0,
             minWidth: 200,
-            background: '#fff',
+            background: 'var(--white)',
             borderRadius: 12,
             boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
             padding: 8,
@@ -87,14 +87,14 @@ export default function UserMenu({ size = 38 }) {
           <div
             style={{
               padding: '8px 12px',
-              borderBottom: '1px solid #f0f0f0',
+              borderBottom: '1px solid var(--line)',
               marginBottom: 4,
             }}
           >
-            <div style={{ fontWeight: 700, fontSize: 14, color: '#0a0a1a' }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink-900)' }}>
               {name}
             </div>
-            <div style={{ fontSize: 12, color: '#666', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: 12, color: 'var(--ink-500)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {email}
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function UserMenu({ size = 38 }) {
             type="button"
             role="menuitem"
             onClick={handleLogout}
-            style={{ ...menuItemStyle, color: '#e74c3c', fontWeight: 600 }}
+            style={{ ...menuItemStyle, color: 'var(--red-600)', fontWeight: 600 }}
           >
             Logout
           </button>
@@ -132,7 +132,7 @@ const menuItemStyle = {
   borderRadius: 8,
   cursor: 'pointer',
   fontSize: 14,
-  color: '#0a0a1a',
+  color: 'var(--ink-900)',
 }
 
 export { UserMenu }

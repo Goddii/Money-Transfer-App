@@ -110,27 +110,27 @@ function TransferReview() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#f8f9fa', maxWidth: '430px', margin: '0 auto', padding: '0 0 2rem' },
+  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', padding: '0 0 2rem' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
-  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#0a0a1a' },
+  title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },
   avatarRow: { display: 'flex', justifyContent: 'center', padding: '2rem 1.5rem' },
   avatarGroup: { display: 'flex', alignItems: 'center', gap: '1.5rem' },
-  avatar: { width: '60px', height: '60px', background: '#e8f8f3', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#00c896', fontSize: '1rem' },
-  avatarName: { margin: '0.5rem 0 0', textAlign: 'center', fontSize: '0.85rem', color: '#333' },
-  arrow: { textAlign: 'center', color: '#00c896', fontWeight: '700', fontSize: '1.2rem', lineHeight: '1.2' },
-  instant: { fontSize: '0.7rem', color: '#666', fontWeight: '400' },
-  detailsCard: { background: '#fff', borderRadius: '16px', padding: '1.5rem', margin: '0 1.5rem 2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
+  avatar: { width: '60px', height: '60px', background: 'var(--emerald-100)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: 'var(--emerald-600)', fontSize: '1rem' },
+  avatarName: { margin: '0.5rem 0 0', textAlign: 'center', fontSize: '0.85rem', color: 'var(--ink-700)' },
+  arrow: { textAlign: 'center', color: 'var(--emerald-500)', fontWeight: '700', fontSize: '1.2rem', lineHeight: '1.2' },
+  instant: { fontSize: '0.7rem', color: 'var(--ink-500)', fontWeight: '400' },
+  detailsCard: { background: 'var(--white)', borderRadius: '16px', padding: '1.5rem', margin: '0 1.5rem 2rem', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
   detailRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0' },
-  detailLabel: { margin: 0, color: '#666', fontSize: '0.95rem' },
-  detailLabelBold: { margin: 0, color: '#0a0a1a', fontSize: '0.95rem', fontWeight: '600' },
-  detailValue: { margin: 0, color: '#0a0a1a', fontSize: '0.95rem' },
-  totalValue: { margin: 0, color: '#00c896', fontSize: '1.1rem', fontWeight: '700' },
-  divider: { height: '1px', background: '#f0f0f0', margin: '0.5rem 0' },
-  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
+  detailLabel: { margin: 0, color: 'var(--ink-500)', fontSize: '0.95rem' },
+  detailLabelBold: { margin: 0, color: 'var(--ink-900)', fontSize: '0.95rem', fontWeight: '600' },
+  detailValue: { margin: 0, color: 'var(--ink-900)', fontSize: '0.95rem' },
+  totalValue: { margin: 0, color: 'var(--ink-900)', fontSize: '1.1rem', fontWeight: '700' },
+  divider: { height: '1px', background: 'var(--line)', margin: '0.5rem 0' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
   actions: { padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' },
-  confirmBtn: { padding: '1rem', background: '#00c896', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
-  cancelBtn: { padding: '1rem', background: 'transparent', color: '#666', border: 'none', borderRadius: '50px', fontSize: '1rem', cursor: 'pointer', textAlign: 'center' }
+  confirmBtn: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
+  cancelBtn: { padding: '1rem', background: 'transparent', color: 'var(--ink-500)', border: 'none', borderRadius: '50px', fontSize: '1rem', cursor: 'pointer', textAlign: 'center' }
 }
 
 export default TransferReview

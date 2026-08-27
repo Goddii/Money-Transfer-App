@@ -90,22 +90,22 @@ function Register() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#fff', maxWidth: '430px', margin: '0 auto', padding: '2rem 1.5rem' },
+  container: { minHeight: '100vh', background: 'var(--white)', maxWidth: '430px', margin: '0 auto', padding: '2rem 1.5rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', marginBottom: '1rem', padding: 0 },
-  title: { fontSize: '1.8rem', fontWeight: '700', margin: '0 0 1.5rem', color: '#0a0a1a' },
+  title: { fontSize: '1.8rem', fontWeight: '700', margin: '0 0 1.5rem', color: 'var(--ink-900)' },
   form: { display: 'flex', flexDirection: 'column', gap: '1.2rem' },
   inputGroup: { display: 'flex', flexDirection: 'column', gap: '0.4rem' },
-  label: { fontSize: '0.9rem', color: '#333', fontWeight: '500' },
-  input: { padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' },
-  passwordWrapper: { display: 'flex', alignItems: 'center', border: '1px solid #ddd', borderRadius: '10px', overflow: 'hidden' },
+  label: { fontSize: '0.9rem', color: 'var(--ink-700)', fontWeight: '500' },
+  input: { padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '1rem', outline: 'none' },
+  passwordWrapper: { display: 'flex', alignItems: 'center', border: '1px solid var(--line)', borderRadius: '10px', overflow: 'hidden' },
   passwordInput: { flex: 1, padding: '0.9rem 1rem', border: 'none', fontSize: '1rem', outline: 'none' },
   eyeBtn: { background: 'none', border: 'none', padding: '0.9rem', cursor: 'pointer', fontSize: '1rem' },
   checkboxRow: { display: 'flex', alignItems: 'flex-start', gap: '0.5rem' },
-  checkboxLabel: { fontSize: '0.85rem', color: '#666', lineHeight: '1.4' },
-  button: { padding: '1rem', background: '#00c896', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
-  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1rem' },
-  footer: { textAlign: 'center', marginTop: '1.5rem', color: '#666', fontSize: '0.9rem' },
-  link: { color: '#00c896', textDecoration: 'none', fontWeight: '600', cursor: 'pointer' }
+  checkboxLabel: { fontSize: '0.85rem', color: 'var(--ink-500)', lineHeight: '1.4' },
+  button: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1rem' },
+  footer: { textAlign: 'center', marginTop: '1.5rem', color: 'var(--ink-500)', fontSize: '0.9rem' },
+  link: { color: 'var(--emerald-500)', textDecoration: 'none', fontWeight: '600', cursor: 'pointer' }
 }
 
 export default Register

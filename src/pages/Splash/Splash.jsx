@@ -20,7 +20,7 @@ function Splash() {
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0a0a1a 0%, #0d1f2d 100%)',
+    background: 'linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 100%)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -38,7 +38,7 @@ const styles = {
   logoIcon: {
     width: '100px',
     height: '100px',
-    background: '#00c896',
+    background: 'var(--emerald-500)',
     borderRadius: '24px',
     display: 'flex',
     alignItems: 'center',
@@ -53,7 +53,7 @@ const styles = {
     margin: '0 0 0.5rem'
   },
   tagline: {
-    color: '#8899aa',
+    color: '#9AA1C6',
     fontSize: '1.1rem',
     margin: 0
   },
@@ -61,7 +61,7 @@ const styles = {
     width: '100%',
     maxWidth: '400px',
     padding: '1.2rem',
-    background: '#00c896',
+    background: 'var(--emerald-500)',
     color: '#fff',
     border: 'none',
     borderRadius: '50px',

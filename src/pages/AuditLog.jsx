@@ -4,6 +4,7 @@ import Screen from '../components/Screen';
 import StatusPill from '../components/StatusPill';
 import Avatar from '../components/Avatar';
 import { fetchAuditLog, setStatusFilter } from '../store/slices/auditSlice';
+import { formatKES } from '../utils/format';
 
 const STATUS_OPTIONS = ['All', 'Completed', 'Pending', 'Failed'];
 
@@ -11,6 +12,7 @@ export default function AuditLog() {
   const dispatch = useDispatch();
   const { entries, statusFilter, loading, error } = useSelector((s) => s.audit);
   const authUser = useSelector((s) => s.auth.user);
+  const displayName = [authUser?.first_name, authUser?.last_name].filter(Boolean).join(' ') || authUser?.name || 'Admin';
 
   useEffect(() => {
     dispatch(fetchAuditLog());
@@ -49,7 +51,7 @@ export default function AuditLog() {
       <div className="page-eyebrow">System Ledger</div>
       <div className="page-title-row">
         <div className="page-title">Audit Log</div>
-        <Avatar name={authUser?.name || 'Admin'} />
+        <Avatar name={displayName} />
       </div>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 14, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -103,8 +105,8 @@ export default function AuditLog() {
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--ink-500)', fontWeight: 600 }}>
-                <span>Amt: ${e.amount?.toFixed?.(2) ?? e.amount}</span>
-                <span>Fee: ${e.fee?.toFixed?.(2) ?? e.fee}</span>
+                <span>Amt: {formatKES(e.amount)}</span>
+                <span>Fee: {formatKES(e.fee)}</span>
                 <span>{e.time}</span>
               </div>
             </div>

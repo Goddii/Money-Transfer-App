@@ -64,7 +64,7 @@ function Home() {
       <div style={styles.walletCard}>
         <p style={styles.walletLabel}>Available Balance</p>
         <h1 style={styles.balance}>
-          {currency} {balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          {formatKES(balance)}
         </h1>
         <div style={styles.walletFooter}>
           <span style={styles.walletName}>Vyloc Wallet</span>
@@ -115,8 +115,8 @@ function Home() {
               <div style={styles.trendHeader}>
                 <span style={styles.trendTitle}>6-Month Inflow / Outflow</span>
                 <span style={styles.trendLegend}>
-                  <i style={{ ...styles.dot, background: '#00c896' }} /> In
-                  <i style={{ ...styles.dot, background: '#e74c3c', marginLeft: 8 }} /> Out
+                  <i style={{ ...styles.dot, background: 'var(--green-600)' }} /> In
+                  <i style={{ ...styles.dot, background: 'var(--red-600)', marginLeft: 8 }} /> Out
                 </span>
               </div>
               {trend.length === 0 ? (
@@ -129,8 +129,8 @@ function Home() {
                     return (
                       <div key={t.month} style={styles.trendCol}>
                         <div style={styles.trendBars}>
-                          <span style={{ ...styles.trendBar, height: `${(inflow / maxTrend) * 56}px`, background: '#00c896' }} />
-                          <span style={{ ...styles.trendBar, height: `${(outflow / maxTrend) * 56}px`, background: '#e74c3c' }} />
+                          <span style={{ ...styles.trendBar, height: `${(inflow / maxTrend) * 56}px`, background: 'var(--green-600)' }} />
+                          <span style={{ ...styles.trendBar, height: `${(outflow / maxTrend) * 56}px`, background: 'var(--red-600)' }} />
                         </div>
                         <span style={styles.trendMonth}>{t.label ? t.label.split(' ')[0] : t.month}</span>
                       </div>
@@ -170,7 +170,7 @@ function Home() {
                   <p style={styles.txType}>{txType} • {createdAt}</p>
                 </div>
                 <p style={signed >= 0 ? styles.txAmountPos : styles.txAmountNeg}>
-                  {signed > 0 ? '+' : ''}{currency} {Math.abs(signed).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {signed > 0 ? '+' : ''}{formatKES(Math.abs(signed))}
                 </p>
               </div>
             )
@@ -208,50 +208,49 @@ function Home() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: '#f8f9fa', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
-  greeting: { color: '#666', margin: 0, fontSize: '0.9rem' },
-  username: { margin: 0, fontSize: '1.5rem', fontWeight: '700', color: '#0a0a1a' },
-  avatar: { width: '45px', height: '45px', background: '#00c896', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: '700', fontSize: '1.2rem' },
-  walletCard: { background: 'linear-gradient(135deg, #0a0a1a 0%, #0d1f2d 100%)', borderRadius: '16px', padding: '1.5rem', margin: '0 1.5rem 1.5rem', color: '#fff' },
-  walletLabel: { color: '#8899aa', margin: '0 0 0.5rem', fontSize: '0.9rem' },
+  greeting: { color: 'var(--ink-500)', margin: 0, fontSize: '0.9rem' },
+  username: { margin: 0, fontSize: '1.5rem', fontWeight: '700', color: 'var(--ink-900)' },
+  walletCard: { background: 'var(--emerald-500)', borderRadius: '16px', padding: '1.5rem', margin: '0 1.5rem 1.5rem', color: '#fff' },
+  walletLabel: { color: 'rgba(255,255,255,0.85)', margin: '0 0 0.5rem', fontSize: '0.9rem' },
   balance: { fontSize: '2.2rem', fontWeight: '700', margin: '0 0 1rem' },
   walletFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  walletName: { color: '#8899aa', fontSize: '0.85rem' },
-  walletStatus: { background: '#00c896', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.8rem' },
-  error: { color: '#e74c3c', background: '#ffeaea', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
+  walletName: { color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' },
+  walletStatus: { background: 'var(--emerald-500)', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.8rem' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', margin: '0 1.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' },
   section: { padding: '0 1.5rem', marginBottom: '1.25rem' },
   sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' },
-  sectionTitle: { margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#0a0a1a' },
-  seeAll: { background: 'none', border: 'none', color: '#00c896', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600' },
+  sectionTitle: { margin: 0, fontSize: '1.1rem', fontWeight: '600', color: 'var(--ink-900)' },
+  seeAll: { background: 'none', border: 'none', color: 'var(--emerald-500)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600' },
   statGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' },
-  statBox: { background: '#fff', borderRadius: '12px', padding: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  statLabel: { color: '#666', fontSize: '0.75rem' },
-  statValue: { color: '#0a0a1a', fontSize: '1rem', fontWeight: '700' },
-  trendCard: { background: '#fff', borderRadius: '12px', padding: '1rem', marginTop: '0.75rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
+  statBox: { background: 'var(--white)', borderRadius: '12px', padding: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
+  statLabel: { color: 'var(--ink-500)', fontSize: '0.75rem' },
+  statValue: { color: 'var(--ink-900)', fontSize: '1rem', fontWeight: '700' },
+  trendCard: { background: 'var(--white)', borderRadius: '12px', padding: '1rem', marginTop: '0.75rem', boxShadow: '0 2px 8px rgba(15,18,38,0.06)' },
   trendHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' },
-  trendTitle: { fontSize: '0.85rem', fontWeight: '700', color: '#0a0a1a' },
-  trendLegend: { fontSize: '0.7rem', color: '#666', display: 'flex', alignItems: 'center' },
+  trendTitle: { fontSize: '0.85rem', fontWeight: '700', color: 'var(--ink-900)' },
+  trendLegend: { fontSize: '0.7rem', color: 'var(--ink-500)', display: 'flex', alignItems: 'center' },
   dot: { width: 8, height: 8, borderRadius: '50%', display: 'inline-block', marginRight: 4 },
   trendRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '80px' },
   trendCol: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', flex: 1 },
   trendBars: { display: 'flex', alignItems: 'flex-end', gap: '3px', height: '56px' },
   trendBar: { width: '7px', borderRadius: '3px', minHeight: '2px' },
-  trendMonth: { fontSize: '0.65rem', color: '#666' },
-  txRow: { display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid #f0f0f0' },
-  txAvatar: { width: '40px', height: '40px', background: '#e8f8f3', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#00c896', flexShrink: 0 },
+  trendMonth: { fontSize: '0.65rem', color: 'var(--ink-500)' },
+  txRow: { display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid var(--line)' },
+  txAvatar: { width: '40px', height: '40px', background: 'var(--emerald-100)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: 'var(--emerald-600)', flexShrink: 0 },
   txInfo: { flex: 1 },
-  txName: { margin: 0, fontWeight: '600', fontSize: '0.95rem', color: '#0a0a1a' },
-  txType: { margin: 0, fontSize: '0.8rem', color: '#666' },
-  txAmountPos: { color: '#00c896', fontWeight: '700', fontSize: '0.95rem' },
-  txAmountNeg: { color: '#e74c3c', fontWeight: '700', fontSize: '0.95rem' },
-  empty: { color: '#666', textAlign: 'center', padding: '2rem 0' },
+  txName: { margin: 0, fontWeight: '600', fontSize: '0.95rem', color: 'var(--ink-900)' },
+  txType: { margin: 0, fontSize: '0.8rem', color: 'var(--ink-500)' },
+  txAmountPos: { color: 'var(--green-600)', fontWeight: '700', fontSize: '0.95rem' },
+  txAmountNeg: { color: 'var(--red-600)', fontWeight: '700', fontSize: '0.95rem' },
+  empty: { color: 'var(--ink-500)', textAlign: 'center', padding: '2rem 0' },
   actions: { display: 'flex', justifyContent: 'space-around', padding: '0 1.5rem 1.5rem' },
-  actionBtn: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', background: '#fff', border: 'none', borderRadius: '12px', padding: '1rem', cursor: 'pointer', fontSize: '0.8rem', color: '#333', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', width: '70px' },
+  actionBtn: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', background: 'var(--white)', border: 'none', borderRadius: '12px', padding: '1rem', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--ink-700)', boxShadow: '0 2px 8px rgba(15,18,38,0.06)', width: '70px' },
   actionIcon: { fontSize: '1.2rem' },
-  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: '#fff', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid #f0f0f0', zIndex: 100 },
-  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: '#999', textAlign: 'center', lineHeight: '1.4' },
-  navBtnActive: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: '#00c896', textAlign: 'center', lineHeight: '1.4', fontWeight: '600' }
+  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: 'var(--white)', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid var(--line)', zIndex: 100 },
+  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--ink-300)', textAlign: 'center', lineHeight: '1.4' },
+  navBtnActive: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--emerald-500)', textAlign: 'center', lineHeight: '1.4', fontWeight: '600' }
 }
 
 export default Home

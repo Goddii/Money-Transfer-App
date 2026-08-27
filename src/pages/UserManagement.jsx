@@ -119,7 +119,7 @@ export default function UserManagement() {
       <div className="page-eyebrow">User Management</div>
       <div className="page-title-row">
         <div className="page-title">Users</div>
-        <div className="avatar" style={{ background: 'var(--orange-50)', color: 'var(--orange-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="avatar" style={{ background: 'var(--emerald-50)', color: 'var(--emerald-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           A
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function UserManagement() {
         {filtered.map((u) => (
           <Link key={u.id} to={`/admin/users/${u.id}`} className="list-row">
             <div className="list-left">
-              <div className="avatar" style={{ width: 34, height: 34, background: 'var(--orange-50)', color: 'var(--orange-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div className="avatar" style={{ width: 34, height: 34, background: 'var(--emerald-50)', color: 'var(--emerald-600)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {u.name?.[0] || '?'}
               </div>
               <div>

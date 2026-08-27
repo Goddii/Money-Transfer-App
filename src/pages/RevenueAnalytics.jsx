@@ -44,14 +44,20 @@ export default function RevenueAnalytics() {
   }
 
   const avatar = adminUser?.avatar_url || '';
-  const name = adminUser?.name || '';
+  const name = [adminUser?.first_name, adminUser?.last_name].filter(Boolean).join(' ') || adminUser?.name || 'Administrator';
 
   return (
     <Screen nav="Revenue">
       <div className="page-eyebrow">Fee Analytics</div>
       <div className="page-title-row">
         <div className="page-title">Revenue</div>
-        <img className="avatar" src={avatar} alt={name} />
+        {avatar ? (
+          <img className="avatar" src={avatar} alt={name} />
+        ) : (
+          <div className="avatar" style={{ background: 'var(--emerald-50)', color: 'var(--emerald-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+            {(name || 'A')[0]}
+          </div>
+        )}
       </div>
 
       <div style={{ fontSize: 12.5, color: 'var(--ink-500)', fontWeight: 600, marginBottom: 12 }}>
@@ -61,7 +67,7 @@ export default function RevenueAnalytics() {
       <div className="stat-grid">
         <div className="stat-card">
           <div className="stat-label">Total Revenue</div>
-          <div className="stat-value" style={{ color: 'var(--orange-600)' }}>
+          <div className="stat-value" style={{ color: 'var(--emerald-600)' }}>
             {formatKES(totalRevenue)}
           </div>
           <div className="stat-delta up">{revenue.monthRevenueDelta}</div>
@@ -104,7 +110,7 @@ export default function RevenueAnalytics() {
               </span>
             </div>
             <div style={{ height: 6, background: 'var(--surface)', borderRadius: 99 }}>
-              <div style={{ width: `${s.pct}%`, height: '100%', background: 'var(--orange-500)', borderRadius: 99 }} />
+              <div style={{ width: `${s.pct}%`, height: '100%', background: 'var(--emerald-500)', borderRadius: 99 }} />
             </div>
           </div>
         ))}
