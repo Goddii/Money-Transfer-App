@@ -1,4 +1,5 @@
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
+import UserShell from '../../components/UserShell'
 
 function TransferSuccess() {
   const navigate = useNavigate()
@@ -31,7 +32,7 @@ function TransferSuccess() {
   }
 
   return (
-    <div style={styles.container}>
+    <UserShell variant="narrow" style={styles.container}>
       <div style={styles.successIcon}>✓</div>
       <h2 style={styles.title}>Transfer Successful!</h2>
       <p style={styles.subtitle}>Your funds have been sent successfully.</p>
@@ -68,12 +69,12 @@ function TransferSuccess() {
         <button onClick={() => navigate('/send')} style={styles.primaryBtn}>Send Another</button>
         <button onClick={() => navigate('/home')} style={styles.secondaryBtn}>Back to Home</button>
       </div>
-    </div>
+    </UserShell>
   )
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', padding: '3rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  container: { minHeight: '100vh', background: 'var(--surface)', padding: '3rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' },
   successIcon: { width: '80px', height: '80px', background: 'var(--green-600)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '2.5rem', marginBottom: '1.5rem' },
   title: { fontSize: '1.8rem', fontWeight: '700', color: 'var(--ink-900)', margin: '0 0 0.5rem', textAlign: 'center' },
   subtitle: { color: 'var(--ink-500)', margin: '0 0 2rem', textAlign: 'center' },

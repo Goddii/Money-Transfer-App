@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { parseMoney } from '../../utils/format'
+import UserShell from '../../components/UserShell'
 
 // Matches TransactionService.TRANSFER_FEE on the backend (no P2P fee in the MVP).
 const TRANSFER_FEE = 0
@@ -62,7 +63,7 @@ function TransferReview() {
   }
 
   return (
-    <div style={styles.container}>
+    <UserShell variant="narrow" style={styles.container}>
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Review Transfer</h2>
@@ -105,12 +106,12 @@ function TransferReview() {
         </button>
         <button onClick={() => navigate(-1)} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
       </div>
-    </div>
+    </UserShell>
   )
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', padding: '0 0 2rem' },
+  container: { minHeight: '100vh', background: 'var(--surface)', padding: '0 0 2rem' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
   title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },

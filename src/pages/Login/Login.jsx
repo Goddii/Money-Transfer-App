@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginSuccess } from '../../store/authSlice'
 import api from '../../utils/api'
+import UserShell from '../../components/UserShell'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -33,7 +34,7 @@ function Login() {
   }
 
   return (
-    <div style={styles.container}>
+    <UserShell variant="narrow" style={styles.container}>
       <div style={styles.content}>
         <h2 style={styles.title}>Welcome back</h2>
         <p style={styles.subtitle}>Enter your credentials to access your account</p>
@@ -55,12 +56,12 @@ function Login() {
         </form>
         <p style={styles.footer}>Don't have an account? <Link to="/register" style={styles.link}>Sign Up</Link></p>
       </div>
-    </div>
+    </UserShell>
   )
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: 'var(--white)', maxWidth: '430px', margin: '0 auto', padding: '2rem 1.5rem' },
+  container: { minHeight: '100vh', background: 'var(--white)', padding: '2rem 1.5rem' },
   content: { paddingTop: '1rem' },
   title: { fontSize: '1.8rem', fontWeight: '700', margin: '0 0 0.5rem', color: 'var(--ink-900)' },
   subtitle: { color: 'var(--ink-500)', margin: '0 0 2rem', fontSize: '0.95rem' },

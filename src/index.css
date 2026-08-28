@@ -364,3 +364,114 @@ a{color:inherit;text-decoration:none;}
   .screen{max-width:600px;padding:24px 24px 84px;}
   .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
+
+/* =====================================================================
+   USER-FACING RESPONSIVE LAYOUT
+   These rules only affect normal user pages. The admin UI (.screen,
+   .sidebar, .bottomnav) is intentionally untouched above.
+   User pages were previously hard-coded to a 430px column; these
+   classes let the same content adapt from mobile -> tablet -> desktop
+   without restructuring each page's internals.
+   ===================================================================== */
+
+/* Centered, responsive page container. Mobile keeps the familiar narrow
+   column; larger screens get progressively wider, intentional layouts. */
+.u-shell{
+  width:100%;
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  /* clear the fixed mobile bottom nav */
+  padding-bottom:88px;
+}
+/* list pages (transactions, beneficiaries): comfortable, readable width */
+.u-shell--list{ max-width:480px; }
+/* form/flow pages (auth, send, deposit, profile, review, success): keep
+   controls from stretching across huge screens */
+.u-shell--narrow{ max-width:460px; }
+
+@media (min-width:640px){
+  .u-shell{ max-width:680px; }
+  .u-shell--list{ max-width:640px; }
+  .u-shell--narrow{ max-width:480px; }
+}
+@media (min-width:1024px){
+  .u-shell{ max-width:960px; padding-bottom:32px; }
+  .u-shell--list{ max-width:700px; }
+  .u-shell--narrow{ max-width:480px; }
+}
+@media (min-width:1280px){
+  .u-shell{ max-width:1040px; }
+  .u-shell--list{ max-width:720px; }
+  .u-shell--narrow{ max-width:480px; }
+}
+
+/* Home stat grid: 2-up on mobile/tablet, 3-up on laptop/desktop so the
+   six summary cards stay compact instead of stretching full-width. */
+.u-stat-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:12px;
+}
+@media (min-width:1024px){
+  .u-stat-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+
+/* Home quick-action row: keep the 4 actions grouped (not stretched) on
+   wide screens while staying full-width on mobile */
+.u-actions{ display:flex; justify-content:space-around; padding:0 1.5rem 1.5rem; }
+@media (min-width:1024px){ .u-actions{ max-width:560px; margin:0 auto; } }
+
+/* ----- User navigation -----
+   Mobile/tablet: fixed bottom bar (matches the original product).
+   Desktop (>=1024px): becomes a sticky top bar — a natural evolution of
+   the same primary destinations, not a generic admin sidebar. */
+.u-nav{
+  position:fixed;
+  left:0; right:0; bottom:0;
+  z-index:100;
+  background:var(--white);
+  border-top:1px solid var(--line);
+}
+.u-nav-inner{
+  max-width:1040px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  padding:0.5rem 0.5rem calc(0.6rem + env(safe-area-inset-bottom));
+}
+.u-nav-links{ display:contents; }
+.u-nav-brand{ display:none; }
+.u-nav-logo{
+  width:26px; height:26px; border-radius:8px;
+  background:var(--emerald-500); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:14px;
+}
+.u-nav-link{
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  flex:1; background:none; border:none; cursor:pointer; font:inherit;
+  font-size:10.5px; font-weight:700; color:var(--ink-300); padding:4px 0;
+}
+.u-nav-link .u-nav-ico{ font-size:18px; line-height:1; }
+.u-nav-link.active{ color:var(--emerald-500); }
+
+@media (min-width:1024px){
+  .u-nav{
+    position:sticky; top:0; bottom:auto;
+    border-top:none; border-bottom:1px solid var(--line);
+    box-shadow:0 1px 4px rgba(15,18,38,.04);
+  }
+  .u-nav-inner{ justify-content:space-between; padding:0.6rem 1rem; }
+  .u-nav-brand{
+    display:flex; align-items:center; gap:8px;
+    font-weight:800; color:var(--ink-900); font-size:15px;
+  }
+  .u-nav-links{ display:flex; gap:4px; }
+  .u-nav-link{
+    flex:none; flex-direction:row; gap:6px;
+    padding:8px 14px; border-radius:10px; font-size:13px;
+  }
+  .u-nav-link.active{ background:var(--emerald-100); }
+}

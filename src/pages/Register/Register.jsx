@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api from '../../utils/api'
+import UserShell from '../../components/UserShell'
 
 function Register() {
   const [firstName, setFirstName] = useState('')
@@ -41,7 +42,7 @@ function Register() {
   }
 
   return (
-    <div style={styles.container}>
+    <UserShell variant="narrow" style={styles.container}>
       <button onClick={() => navigate(-1)} style={styles.back}>←</button>
       <h2 style={styles.title}>Create Account</h2>
       {error && <p style={styles.error}>{error}</p>}
@@ -85,12 +86,12 @@ function Register() {
         <button type="submit" style={styles.button}>Create Account</button>
       </form>
       <p style={styles.footer}>Already have an account? <Link to="/login" style={styles.link}>Sign In</Link></p>
-    </div>
+    </UserShell>
   )
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: 'var(--white)', maxWidth: '430px', margin: '0 auto', padding: '2rem 1.5rem' },
+  container: { minHeight: '100vh', background: 'var(--white)', padding: '2rem 1.5rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', marginBottom: '1rem', padding: 0 },
   title: { fontSize: '1.8rem', fontWeight: '700', margin: '0 0 1.5rem', color: 'var(--ink-900)' },
   form: { display: 'flex', flexDirection: 'column', gap: '1.2rem' },
