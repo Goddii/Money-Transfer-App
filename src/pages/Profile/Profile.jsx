@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, updateUser } from '../../store/authSlice'
 import api from '../../utils/api'
+import UserShell from '../../components/UserShell'
 
 function Profile() {
   const { user } = useSelector(state => state.auth)
@@ -71,7 +72,7 @@ function Profile() {
   }
 
   return (
-    <div style={styles.container}>
+    <UserShell nav variant="narrow" style={styles.container}>
       <div style={styles.header}>
         <h2 style={styles.title}>Profile</h2>
       </div>
@@ -128,18 +129,12 @@ function Profile() {
       )}
       <button onClick={() => navigate('/beneficiaries')} style={styles.linkBtn}>Manage Beneficiaries</button>
       <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
-      <div style={styles.bottomNav}>
-        <button onClick={() => navigate('/home')} style={styles.navBtn}>🏠<br/>Home</button>
-        <button onClick={() => navigate('/send')} style={styles.navBtn}>↗<br/>Send</button>
-        <button onClick={() => navigate('/transactions')} style={styles.navBtn}>🕐<br/>History</button>
-        <button style={styles.navBtnActive}>👤<br/>Profile</button>
-      </div>
-    </div>
+    </UserShell>
   )
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: 'var(--surface)' },
   header: { padding: '2rem 1.5rem 1rem' },
   title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },
   avatarSection: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1.5rem', background: 'var(--white)', margin: '0 0 1rem' },
@@ -162,10 +157,7 @@ const styles = {
   linkBtn: { width: 'calc(100% - 3rem)', margin: '0 1.5rem 1rem', padding: '0.9rem', background: 'var(--white)', color: 'var(--ink-900)', border: '1px solid var(--line)', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
   logoutBtn: { width: 'calc(100% - 3rem)', margin: '0 1.5rem', padding: '0.9rem', background: 'var(--white)', color: 'var(--red-600)', border: '1px solid var(--red-600)', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
   success: { color: 'var(--green-600)', background: 'var(--green-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem', margin: '0 1.5rem 1rem' },
-  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem', margin: '0 1.5rem 1rem' },
-  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: 'var(--white)', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid var(--line)', zIndex: 100 },
-  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--ink-300)', textAlign: 'center', lineHeight: '1.4' },
-  navBtnActive: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--emerald-500)', textAlign: 'center', lineHeight: '1.4', fontWeight: '600' }
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem', margin: '0 1.5rem 1rem' }
 }
 
 export default Profile

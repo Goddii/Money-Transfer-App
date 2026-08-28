@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { formatKES } from '../../utils/format'
+import UserShell from '../../components/UserShell'
 
 const POLL_INTERVAL_MS = 5000
 
@@ -116,7 +117,7 @@ function Deposit() {
   }
 
   return (
-    <div style={styles.container}>
+    <UserShell nav variant="narrow" style={styles.container}>
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Add Funds</h2>
@@ -180,19 +181,12 @@ function Deposit() {
           {submitting ? 'Sending…' : 'Deposit Funds'}
         </button>
       </form>
-
-      <div style={styles.bottomNav}>
-        <button onClick={() => navigate('/home')} style={styles.navBtn}>🏠<br/>Home</button>
-        <button onClick={() => navigate('/send')} style={styles.navBtn}>↗<br/>Send</button>
-        <button onClick={() => navigate('/transactions')} style={styles.navBtn}>🕐<br/>History</button>
-        <button onClick={() => navigate('/profile')} style={styles.navBtn}>👤<br/>Profile</button>
-      </div>
-    </div>
+    </UserShell>
   )
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: 'var(--surface)' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
   title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },
@@ -211,9 +205,7 @@ const styles = {
   quickBtnActive: { padding: '0.5rem 1rem', border: '1px solid var(--emerald-500)', borderRadius: '20px', background: 'var(--emerald-500)', cursor: 'pointer', fontSize: '0.9rem', color: '#fff' },
   button: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
   error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
-  success: { color: 'var(--green-600)', background: 'var(--green-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' },
-  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: 'var(--white)', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid var(--line)', zIndex: 100 },
-  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--ink-300)', textAlign: 'center', lineHeight: '1.4' }
+  success: { color: 'var(--green-600)', background: 'var(--green-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem' }
 }
 
 export default Deposit

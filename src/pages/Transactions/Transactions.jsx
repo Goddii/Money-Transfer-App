@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { parseMoney, formatKES } from '../../utils/format'
+import UserShell from '../../components/UserShell'
 
 // Backend transaction type vocabulary (app/models/transaction.py TransactionType).
 const TYPE_TRANSFER = 'Transfer'
@@ -65,7 +66,7 @@ function Transactions() {
   }, [filtered])
 
   return (
-    <div style={styles.container}>
+    <UserShell nav variant="list" style={styles.container}>
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Transactions</h2>
@@ -125,19 +126,12 @@ function Transactions() {
           ))
         )}
       </div>
-
-      <div style={styles.bottomNav}>
-        <button onClick={() => navigate('/home')} style={styles.navBtn}>🏠<br/>Home</button>
-        <button onClick={() => navigate('/send')} style={styles.navBtn}>↗<br/>Send</button>
-        <button style={styles.navBtnActive}>🕐<br/>History</button>
-        <button onClick={() => navigate('/profile')} style={styles.navBtn}>👤<br/>Profile</button>
-      </div>
-    </div>
+    </UserShell>
   )
 }
 
 const styles = {
-  container: { minHeight: '100vh', background: 'var(--surface)', maxWidth: '430px', margin: '0 auto', paddingBottom: '80px' },
+  container: { minHeight: '100vh', background: 'var(--surface)' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 1.5rem 1rem' },
   back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' },
   title: { margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink-900)' },
@@ -154,10 +148,7 @@ const styles = {
   txType: { margin: 0, fontSize: '0.8rem', color: 'var(--ink-500)' },
   txAmountPos: { color: 'var(--green-600)', fontWeight: '700', fontSize: '0.95rem' },
   txAmountNeg: { color: 'var(--red-600)', fontWeight: '700', fontSize: '0.95rem' },
-  empty: { color: 'var(--ink-500)', textAlign: 'center', padding: '2rem 0' },
-  bottomNav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '430px', background: 'var(--white)', display: 'flex', justifyContent: 'space-around', padding: '0.75rem 0', borderTop: '1px solid var(--line)', zIndex: 100 },
-  navBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--ink-300)', textAlign: 'center', lineHeight: '1.4' },
-  navBtnActive: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--emerald-500)', textAlign: 'center', lineHeight: '1.4', fontWeight: '600' }
+  empty: { color: 'var(--ink-500)', textAlign: 'center', padding: '2rem 0' }
 }
 
 export default Transactions
