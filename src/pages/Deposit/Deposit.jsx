@@ -5,6 +5,31 @@ import { formatKES } from '../../utils/format'
 import UserShell from '../../components/UserShell'
 
 const POLL_INTERVAL_MS = 5000
+// Only nudge server-side reconciliation at most this often while a deposit is
+// still pending, so a stuck deposit (callback never arrived / arrived while
+// Daraja was still finalising) is actively retried without hammering Daraja.
+const RECONCILE_INTERVAL_MS = 15000
+// Survives backgrounding / reload / navigating away and back, so polling always
+// resumes for an in-flight deposit regardless of what the mobile OS does to the
+// tab while the user is entering their M-Pesa PIN.
+const STORAGE_KEY = 'vyloc_mpesa_deposit_id'
+
+function readStoredDepositId() {
+  try {
+    const stored = sessionStorage.getItem(STORAGE_KEY)
+    return stored ? Number(stored) : null
+  } catch {
+    return null
+  }
+}
+
+function clearStoredDepositId() {
+  try {
+    sessionStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // sessionStorage may be unavailable (private mode); ignore.
+  }
+}
 
 function Deposit() {
   const [amount, setAmount] = useState('')
@@ -16,8 +41,27 @@ function Deposit() {
 
   // The internal M-Pesa transaction id returned by the STK push. Used to poll
   // the user-facing status endpoint; never the Daraja checkout_request_id.
-  const [depositId, setDepositId] = useState(null)
+  // Initialised from sessionStorage so a deposit in flight survives a reload or
+  // the user switching to the M-Pesa app and back.
+  const [depositId, setDepositId] = useState(() => readStoredDepositId())
   const pollRef = useRef(null)
+  const lastReconcileRef = useRef(0)
+  const depositIdRef = useRef(depositId)
+  depositIdRef.current = depositId
+
+  // Persist the in-flight deposit id so polling can resume after the component
+  // unmounts/remounts (backgrounding, reload, navigation).
+  useEffect(() => {
+    if (depositId) {
+      try {
+        sessionStorage.setItem(STORAGE_KEY, String(depositId))
+      } catch {
+        // ignore unavailable storage
+      }
+    } else {
+      clearStoredDepositId()
+    }
+  }, [depositId])
 
   const navigate = useNavigate()
 
@@ -38,26 +82,52 @@ function Deposit() {
       try {
         // The axios instance already carries the `/api` prefix in its baseURL,
         // so the path must be relative to it, exactly like every other call.
-        const res = await api.get(`/mpesa/transactions/${depositId}`)
+        const id = depositIdRef.current
+        const res = await api.get(`/mpesa/transactions/${id}`)
         if (!active) return
         const t = res.data.data.transaction
 
+        // FRONTEND_STATUS_CHECK: traceable via the internal transaction id.
+        console.info(
+          `FRONTEND_STATUS_CHECK depositId=${id} status=${t.status}`
+        )
+
         if (t.status === 'Completed') {
+          // FRONTEND_SUCCESS_DETECTED
+          console.info(`FRONTEND_SUCCESS_DETECTED depositId=${id}`)
           setMessage(`${formatKES(t.amount)} added to your wallet.`)
           setError('')
+          setDepositId(null) // clears sessionStorage so polling won't resume
           api.get('/wallet')
             .then(r => setWallet(r.data.data.wallet))
             .catch(() => {})
           api.get('/transactions').catch(() => {})
           clearInterval(pollRef.current)
         } else if (t.status === 'Failed') {
+          // Genuine terminal failure. Anything else (Pending /
+          // ReconciliationPending) is temporary uncertainty and must never be
+          // surfaced as failure, because a real M-Pesa payment may still be
+          // confirming.
           setError('Your M-Pesa deposit failed. Please try again.')
           setMessage('')
+          setDepositId(null) // clear so we don't re-show this on next mount
           clearInterval(pollRef.current)
-        } else if (t.status === 'ReconciliationPending') {
-          setMessage('Confirming your payment...')
         } else {
-          setMessage('Waiting for M-Pesa confirmation...')
+          // Temporary / non-final state. Keep polling, and actively nudge
+          // server-side reconciliation so a stuck deposit (callback never
+          // arrived, or arrived before Daraja finalised) gets resolved without
+          // waiting for the backend sweep interval.
+          if (t.status === 'ReconciliationPending') {
+            setMessage('Confirming your payment...')
+          } else {
+            setMessage('Waiting for M-Pesa confirmation...')
+          }
+
+          const now = Date.now()
+          if (now - lastReconcileRef.current >= RECONCILE_INTERVAL_MS) {
+            lastReconcileRef.current = now
+            api.post(`/mpesa/transactions/${id}/reconcile`).catch(() => {})
+          }
         }
       } catch (err) {
         // A 404 means the deposit is gone/forbidden; stop polling. Otherwise
@@ -106,6 +176,7 @@ function Deposit() {
       // poll for Daraja confirmation instead of assuming success.
       const deposit = res.data.data.deposit
       setDepositId(deposit.id)
+      lastReconcileRef.current = 0
       setMessage('Waiting for M-Pesa confirmation...')
       setAmount('')
       setPhone('')
