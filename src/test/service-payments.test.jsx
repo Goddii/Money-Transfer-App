@@ -332,7 +332,7 @@ describe('ServicePayment Submission', () => {
       status: 'Completed',
       amount: '500.00',
       payment_reference: 'VYL-SVC-001',
-      result_metadata: { token: '4829-1938-5720-6641-8823', units: 6.8, payment_reference: 'VYL-SVC-001' },
+      result_metadata: { token: 'TEST-ELEC-TOKEN-0001', units: 6.8, payment_reference: 'VYL-SVC-001' },
       account_number: '****7890',
       service_type: 'ELECTRICITY',
       created_at: '2026-08-30T10:00:00Z',
@@ -358,7 +358,7 @@ describe('ServicePayment Submission', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Payment Successful!')).toBeInTheDocument()
-      expect(screen.getByText('4829-1938-5720-6641-8823')).toBeInTheDocument()
+      expect(screen.getByText('TEST-ELEC-TOKEN-0001')).toBeInTheDocument()
       expect(screen.getByText('6.8 kWh')).toBeInTheDocument()
     })
 
@@ -656,7 +656,7 @@ describe('ServicePaymentDetail', () => {
   it('loads and displays payment details (reads data.payment)', async () => {
     api.get.mockResolvedValue(paymentEnvelope({
       id: 'pay-123', service_type: 'ELECTRICITY', amount: '500.00', status: 'Completed',
-      payment_reference: 'VYL-SVC-001', result_metadata: { token: '4829-1938-5720-6641-8823', units: 6.8 },
+      payment_reference: 'VYL-SVC-001', result_metadata: { token: 'TEST-ELEC-TOKEN-0001', units: 6.8 },
       account_number: '****7890', created_at: '2026-08-30T10:00:00Z', updated_at: '2026-08-30T10:00:00Z',
     }))
 
@@ -667,7 +667,7 @@ describe('ServicePaymentDetail', () => {
     await waitFor(() => {
       expect(screen.getByText('Payment Details')).toBeInTheDocument()
       expect(screen.getByText('VYL-SVC-001')).toBeInTheDocument()
-      expect(screen.getByText('4829-1938-5720-6641-8823')).toBeInTheDocument()
+      expect(screen.getByText('TEST-ELEC-TOKEN-0001')).toBeInTheDocument()
       expect(screen.getByText('6.8 kWh')).toBeInTheDocument()
       expect(screen.getByText('****7890')).toBeInTheDocument()
     })
@@ -722,7 +722,7 @@ describe('ServicePaymentDetail', () => {
   it('repeated reconciliation of a terminal payment is a safe no-op', async () => {
     const completed = {
       id: 'pay-999', service_type: 'ELECTRICITY', amount: '100.00', status: 'Completed',
-      payment_reference: 'VYL-SVC-009', result_metadata: { token: '1111-2222-3333-4444-5555' },
+      payment_reference: 'VYL-SVC-009', result_metadata: { token: 'TEST-ELEC-TOKEN-0002' },
       account_number: '****6789', created_at: '2026-08-30T10:00:00Z', updated_at: '2026-08-30T10:01:00Z',
     }
     api.get.mockResolvedValue(paymentEnvelope(completed))
