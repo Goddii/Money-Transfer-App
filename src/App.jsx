@@ -17,6 +17,10 @@ import TransferSuccess from './pages/TransferSuccess/TransferSuccess'
 import Transactions from './pages/Transactions/Transactions'
 import Beneficiaries from './pages/Beneficiaries/Beneficiaries'
 import Profile from './pages/Profile/Profile'
+import Services from './pages/Services/Services'
+import ServicePayment from './pages/Services/ServicePayment'
+import ServicePaymentHistory from './pages/Services/ServicePaymentHistory'
+import ServicePaymentDetail from './pages/Services/ServicePaymentDetail'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -35,6 +39,10 @@ function App() {
         <Route path="/send" element={<ProtectedRoute><SendMoney /></ProtectedRoute>} />
         <Route path="/transfer-review" element={<ProtectedRoute><TransferReview /></ProtectedRoute>} />
         <Route path="/transfer-success" element={<ProtectedRoute><TransferSuccess /></ProtectedRoute>} />
+        <Route path="/services" element={<ProtectedRoute><Services /></ProtectedRoute>} />
+        <Route path="/service-payment" element={<ProtectedRoute><ServicePayment /></ProtectedRoute>} />
+        <Route path="/service-payments" element={<ProtectedRoute><ServicePaymentHistory /></ProtectedRoute>} />
+        <Route path="/service-payments/:id" element={<ProtectedRoute><ServicePaymentDetail /></ProtectedRoute>} />
         <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
         <Route path="/beneficiaries" element={<ProtectedRoute><Beneficiaries /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

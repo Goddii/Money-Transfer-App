@@ -7,6 +7,13 @@ import UserShell from '../../components/UserShell'
 // Backend transaction type vocabulary (app/models/transaction.py TransactionType).
 const TYPE_TRANSFER = 'Transfer'
 const TYPE_DEPOSIT = 'Deposit'
+const TYPE_SERVICE = 'ServicePayment'
+
+const TYPE_LABELS = {
+  Transfer: 'Transfer',
+  Deposit: 'Deposit',
+  ServicePayment: 'Service Payment',
+}
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -47,7 +54,7 @@ function Transactions() {
   // ('in' | 'out') relative to the authenticated user, so direction — not the
   // sign of the amount — decides sent vs received.
   const filtered = useMemo(() => transactions.filter(tx => {
-    if (filter === 'sent') return tx.tx_type === TYPE_TRANSFER && tx.direction === 'out'
+    if (filter === 'sent') return (tx.tx_type === TYPE_TRANSFER && tx.direction === 'out') || tx.tx_type === TYPE_SERVICE
     if (filter === 'received') return tx.tx_type === TYPE_TRANSFER && tx.direction === 'in'
     if (filter === 'deposits') return tx.tx_type === TYPE_DEPOSIT
     return true
@@ -98,10 +105,13 @@ function Transactions() {
               <p style={styles.dateLabel}>{date}</p>
               {txs.map(tx => {
                 const isIncoming = tx.direction === 'in'
+                const isService = tx.tx_type === TYPE_SERVICE
                 // Show the counterparty: who received it if we sent, who sent
                 // it if we received.
                 const counterparty = isIncoming ? tx.sender : tx.receiver
-                const name = counterparty?.name || tx.tx_type || 'Transaction'
+                const name = isService
+                  ? 'Service Payment'
+                  : (counterparty?.name || tx.tx_type || 'Transaction')
                 const amount = parseMoney(tx.amount)
                 const time = tx.timestamp
                   ? new Date(tx.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
@@ -112,7 +122,7 @@ function Transactions() {
                     <div style={styles.txInfo}>
                       <p style={styles.txName}>{name}</p>
                       <p style={styles.txType}>
-                        {tx.tx_type}{time ? ` • ${time}` : ''}
+                        {TYPE_LABELS[tx.tx_type] || tx.tx_type}{time ? ` • ${time}` : ''}
                         {tx.status && tx.status !== 'Completed' ? ` • ${tx.status}` : ''}
                       </p>
                     </div>
