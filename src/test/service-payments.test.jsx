@@ -637,6 +637,164 @@ describe('ServicePaymentHistory', () => {
   })
 })
 
+// ── service_type Contract (Services listing → payment POST) ────────────────
+// Regression cover for the production 400:
+//   POST /api/service-payments -> 400
+//   "Invalid service type. Must be one of: ELECTRICITY, WATER, AIRTIME"
+// GET /api/services returns the enum under `service_type` (with `type` as a
+// legacy alias). The page previously read only `service_type` on a response
+// that carried only `type`, so it posted service_type: "" and the backend
+// rejected it. These tests drive the real Services -> ServicePayment
+// navigation, so the value actually taken from the listing is asserted.
+describe('service_type contract: listing value is posted verbatim', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  const mockWallet = { balance: 5000, currency: 'KES' }
+
+  function apiGetMock(services) {
+    return (url) => {
+      if (url === '/wallet') return Promise.resolve({ data: { data: { wallet: mockWallet } } })
+      if (url === '/services') return Promise.resolve({ data: { data: { services } } })
+      return Promise.resolve({ data: { data: {} } })
+    }
+  }
+
+  async function renderServicesFlow(services) {
+    api.get.mockImplementation(apiGetMock(services))
+    const { default: Services } = await import('../pages/Services/Services')
+    const { default: ServicePayment } = await import('../pages/Services/ServicePayment')
+    const store = makeStore()
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/services']}>
+          <Routes>
+            <Route path="/services" element={<Services />} />
+            <Route path="/service-payment" element={<ServicePayment />} />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
+    )
+
+    // Let the listing finish loading inside act() before the test interacts.
+    await waitFor(() =>
+      expect(screen.queryByText('Loading services…')).not.toBeInTheDocument()
+    )
+  }
+
+  // Field label rendered by ServicePayment for each backend enum value.
+  const FIELD_LABEL = {
+    ELECTRICITY: 'Meter number',
+    WATER: 'Account number',
+    AIRTIME: 'Phone number',
+  }
+  const ACCOUNT_INPUT = {
+    ELECTRICITY: '1234567890',
+    WATER: '1234567890',
+    AIRTIME: '0712345678',
+  }
+
+  async function payFirstService(user, serviceType, cardLabel) {
+    await waitFor(() => expect(screen.getByText(cardLabel)).toBeInTheDocument())
+    await user.click(screen.getByText(cardLabel))
+
+    const label = FIELD_LABEL[serviceType]
+    await waitFor(() => expect(screen.getByLabelText(label)).toBeInTheDocument())
+
+    await user.type(screen.getByLabelText(label), ACCOUNT_INPUT[serviceType])
+    await user.type(screen.getByLabelText('Amount (KES)'), '500')
+    await user.click(screen.getByText('Review Payment'))
+    await waitFor(() => expect(screen.getByText('Pay KES 500.00')).toBeInTheDocument())
+    await user.click(screen.getByText('Pay KES 500.00'))
+    await waitFor(() => expect(api.post).toHaveBeenCalled())
+  }
+
+  it.each(['ELECTRICITY', 'WATER', 'AIRTIME'])(
+    'posts %s exactly as returned by GET /api/services',
+    async (serviceType) => {
+      const displayName = `${serviceType[0]}${serviceType.slice(1).toLowerCase()}`
+      // Exact backend payload shape (app/models/service_payment.py to_dict).
+      const service = {
+        id: 1,
+        name: displayName,
+        service_type: serviceType,
+        type: serviceType,
+        display_name: displayName,
+        description: 'Simulated service',
+        is_active: true,
+      }
+
+      api.post.mockResolvedValue(paymentEnvelope({
+        id: 'pay-1', status: 'Completed', amount: '500.00',
+        payment_reference: 'VYL-SVC-001', result_metadata: {},
+        account_number: '****7890', service_type: serviceType,
+        created_at: '2026-08-30T10:00:00Z',
+      }))
+
+      await renderServicesFlow([service])
+      const user = userEvent.setup()
+      await payFirstService(user, serviceType, displayName)
+
+      expect(api.post).toHaveBeenCalledWith('/service-payments', expect.objectContaining({
+        service_type: serviceType,
+      }))
+      // The bug: an empty/undefined service_type must never be sent.
+      const payload = api.post.mock.calls[0][1]
+      expect(payload.service_type).toBeTruthy()
+      expect(['ELECTRICITY', 'WATER', 'AIRTIME']).toContain(payload.service_type)
+    }
+  )
+
+  it('falls back to the legacy `type` key when `service_type` is absent', async () => {
+    // Older backend response shape: only `type` carried the enum value.
+    const service = {
+      id: 2,
+      name: 'Water',
+      type: 'WATER',
+      display_name: 'Water',
+      description: 'Simulated service',
+      is_active: true,
+    }
+
+    api.post.mockResolvedValue(paymentEnvelope({
+      id: 'pay-2', status: 'Completed', amount: '500.00',
+      payment_reference: 'VYL-SVC-002', result_metadata: {},
+      account_number: '****7890', service_type: 'WATER',
+      created_at: '2026-08-30T10:00:00Z',
+    }))
+
+    await renderServicesFlow([service])
+    const user = userEvent.setup()
+    await payFirstService(user, 'WATER', 'Water')
+
+    expect(api.post).toHaveBeenCalledWith('/service-payments', expect.objectContaining({
+      service_type: 'WATER',
+    }))
+  })
+
+  it('does not POST when the service type cannot be resolved', async () => {
+    // A malformed provider entry must fail in the UI, not as a backend 400.
+    const service = { id: 3, name: 'Mystery', display_name: 'Mystery' }
+
+    await renderServicesFlow([service])
+    const user = userEvent.setup()
+
+    await waitFor(() => expect(screen.getByText('Mystery')).toBeInTheDocument())
+    await user.click(screen.getByText('Mystery'))
+
+    // Unknown type falls back to the electricity field layout.
+    await waitFor(() => expect(screen.getByLabelText('Meter number')).toBeInTheDocument())
+    await user.type(screen.getByLabelText('Meter number'), '1234567890')
+    await user.type(screen.getByLabelText('Amount (KES)'), '500')
+    await user.click(screen.getByText('Review Payment'))
+
+    expect(
+      screen.getByText('This service is unavailable. Please pick a service again.')
+    ).toBeInTheDocument()
+    expect(api.post).not.toHaveBeenCalled()
+  })
+})
+
 // ── ServicePaymentDetail ───────────────────────────────────────────────────
 describe('ServicePaymentDetail', () => {
   beforeEach(() => vi.clearAllMocks())
