@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { parseMoney, formatKES } from '../../utils/format'
+import { serviceTypeOf, isValidServiceType } from '../../utils/serviceTypes'
 import UserShell from '../../components/UserShell'
 
 // Backend status vocabulary (app/models/service_payment.py ServicePaymentStatus).
@@ -76,7 +77,10 @@ function ServicePayment() {
     return () => { active = false }
   }, [service])
 
-  const serviceType = service?.service_type || ''
+  // The backend enum value sent as `service_type` in the POST payload. Read via
+  // serviceTypeOf so both the canonical `service_type` key and the legacy `type`
+  // key from GET /api/services resolve correctly.
+  const serviceType = serviceTypeOf(service)
   const serviceName = service?.display_name || service?.name || ''
   const serviceIcon = SERVICE_ICONS[serviceType] || '📦'
   const balance = wallet ? parseMoney(wallet.balance) : 0
@@ -93,6 +97,13 @@ function ServicePayment() {
   const field = fieldConfig[serviceType] || fieldConfig.ELECTRICITY
 
   function validateForm() {
+    // Fail fast (and clearly) instead of posting an unsupported service_type
+    // that the backend would reject with a 400.
+    if (!isValidServiceType(serviceType)) {
+      setError('This service is unavailable. Please pick a service again.')
+      return false
+    }
+
     if (!accountNumber.trim()) {
       setError(`${field.label} is required.`)
       return false

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
+import { serviceTypeOf } from '../../utils/serviceTypes'
 import UserShell from '../../components/UserShell'
 
 const SERVICE_ICONS = {
@@ -57,19 +58,19 @@ function Services() {
         ) : (
           services.map(service => (
             <button
-              key={service.id || service.service_type}
+              key={service.id || serviceTypeOf(service)}
               onClick={() => navigate('/service-payment', { state: { service } })}
               style={styles.card}
               type="button"
             >
               <span style={styles.cardIcon}>
-                {SERVICE_ICONS[service.service_type] || '📦'}
+                {SERVICE_ICONS[serviceTypeOf(service)] || '📦'}
               </span>
               <h3 style={styles.cardTitle}>{service.display_name || service.name}</h3>
               <p style={styles.cardDesc}>
-                {service.service_type === 'ELECTRICITY' && 'Purchase simulated prepaid electricity'}
-                {service.service_type === 'WATER' && 'Make a simulated water payment'}
-                {service.service_type === 'AIRTIME' && 'Purchase simulated airtime'}
+                {serviceTypeOf(service) === 'ELECTRICITY' && 'Purchase simulated prepaid electricity'}
+                {serviceTypeOf(service) === 'WATER' && 'Make a simulated water payment'}
+                {serviceTypeOf(service) === 'AIRTIME' && 'Purchase simulated airtime'}
               </p>
             </button>
           ))
