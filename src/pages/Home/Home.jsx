@@ -188,13 +188,17 @@ function Home() {
           <span style={styles.actionIcon}>+</span>
           <span>Deposit</span>
         </button>
-        <button onClick={() => navigate('/transactions')} style={styles.actionBtn}>
-          <span style={styles.actionIcon}>🕐</span>
-          <span>History</span>
+        <button onClick={() => navigate('/services')} style={styles.actionBtn}>
+          <span style={styles.actionIcon}>⚡</span>
+          <span>Services</span>
         </button>
         <button onClick={() => navigate('/beneficiaries')} style={styles.actionBtn}>
           <span style={styles.actionIcon}>👥</span>
           <span>Beneficiary</span>
+        </button>
+        <button onClick={() => navigate('/transactions')} style={styles.actionBtn}>
+          <span style={styles.actionIcon}>🕐</span>
+          <span>History</span>
         </button>
       </div>
     </UserShell>

@@ -7,6 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const ITEMS = [
   { to: '/home', label: 'Home', icon: '🏠' },
   { to: '/send', label: 'Send', icon: '↗' },
+  { to: '/services', label: 'Services', icon: '⚡' },
   { to: '/transactions', label: 'History', icon: '🕐' },
   { to: '/profile', label: 'Profile', icon: '👤' },
 ];
