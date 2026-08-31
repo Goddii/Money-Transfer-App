@@ -124,7 +124,7 @@ export default function UserManagement() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+      <div className="admin-toolbar">
         <div className="search-bar">
           <Search size={16} color="var(--ink-500)" />
           <input

@@ -214,7 +214,7 @@ export default function UserDetail() {
       </div>
 
       <div className="section-title">Administrative Actions</div>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
+      <div className="admin-actions">
         <button
           className={`btn btn-block ${frozen ? 'btn-primary' : 'btn-danger-soft'}`}
           onClick={() => dispatch(toggleFreeze(user.id))}
