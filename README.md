@@ -4,7 +4,7 @@ Vyloc is a mobile-friendly digital wallet and money transfer platform designed t
 
 This repository contains the **React frontend** for the Vyloc platform. It provides the user interface for authentication, wallet management, M-Pesa deposits, beneficiary management, money transfers, transaction history, analytics, and administration.
 
----
+-----
 
 ## Table of Contents
 

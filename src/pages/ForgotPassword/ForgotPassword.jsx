@@ -1,0 +1,74 @@
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import api from '../../utils/api'
+import UserShell from '../../components/UserShell'
+
+function ForgotPassword() {
+  const [email, setEmail] = useState('')
+  const [token, setToken] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    try {
+      const response = await api.post('/forgot-password', { email })
+      setToken(response.data.reset_token)
+      setMessage('Reset token generated successfully.')
+    } catch (err) {
+      setError(err.response?.data?.message || 'Email not found. Please try again.')
+    }
+  }
+
+  return (
+    <UserShell variant="narrow" style={styles.container}>
+      <button onClick={() => navigate(-1)} style={styles.back}>←</button>
+      <h2 style={styles.title}>Forgot Password</h2>
+      <p style={styles.subtitle}>Enter your email to receive a reset token</p>
+      {message && (
+        <div style={styles.success}>
+          <p>{message}</p>
+          <div style={styles.tokenBox}>
+            <p style={styles.tokenLabel}>Your reset token:</p>
+            <p style={styles.token}>{token}</p>
+          </div>
+          <Link to="/reset-password" style={styles.resetLink}>Reset Password →</Link>
+        </div>
+      )}
+      {error && <p style={styles.error}>{error}</p>}
+      {!token && (
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Email Address</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="alex@vyloc.com" style={styles.input} required />
+          </div>
+          <button type="submit" style={styles.button}>Send Reset Token</button>
+        </form>
+      )}
+      <p style={styles.footer}>Remember your password? <Link to="/login" style={styles.link}>Sign In</Link></p>
+    </UserShell>
+  )
+}
+
+const styles = {
+  container: { minHeight: '100vh', background: 'var(--white)', padding: '2rem 1.5rem' },
+  back: { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', marginBottom: '1rem', padding: 0 },
+  title: { fontSize: '1.8rem', fontWeight: '700', margin: '0 0 0.5rem', color: 'var(--ink-900)' },
+  subtitle: { color: 'var(--ink-500)', margin: '0 0 2rem', fontSize: '0.95rem' },
+  form: { display: 'flex', flexDirection: 'column', gap: '1.2rem' },
+  inputGroup: { display: 'flex', flexDirection: 'column', gap: '0.4rem' },
+  label: { fontSize: '0.9rem', color: 'var(--ink-700)', fontWeight: '500' },
+  input: { padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '1rem', outline: 'none' },
+  button: { padding: '1rem', background: 'var(--emerald-500)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
+  success: { background: 'var(--green-100)', border: '1px solid var(--green-600)', borderRadius: '10px', padding: '1rem', marginBottom: '1.5rem' },
+  tokenBox: { background: 'var(--green-100)', padding: '0.75rem', borderRadius: '8px', marginTop: '0.5rem' },
+  tokenLabel: { fontSize: '0.8rem', color: 'var(--ink-500)', margin: '0 0 0.25rem' },
+  token: { fontFamily: 'monospace', fontSize: '0.9rem', wordBreak: 'break-all', margin: 0, color: 'var(--ink-900)' },
+  resetLink: { display: 'inline-block', marginTop: '0.75rem', color: 'var(--emerald-500)', fontWeight: '600', textDecoration: 'none' },
+  error: { color: 'var(--red-600)', background: 'var(--red-100)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1rem' },
+  footer: { textAlign: 'center', marginTop: '1.5rem', color: 'var(--ink-500)', fontSize: '0.9rem' },
+  link: { color: 'var(--emerald-500)', textDecoration: 'none', fontWeight: '600' }
+}
+
+export default ForgotPassword
