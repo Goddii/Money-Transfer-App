@@ -54,7 +54,7 @@ export default function AuditLog() {
         <Avatar name={displayName} />
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="admin-toolbar">
         <FilterChip
           label="Status"
           value={statusFilter}
@@ -90,11 +90,11 @@ export default function AuditLog() {
           !error &&
           filtered.map((e) => (
             <div key={e.id} className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div className="audit-entry-header" style={{ marginBottom: 10 }}>
                 <span style={{ fontSize: 13, fontWeight: 800 }}>{e.id}</span>
                 <StatusPill status={e.status} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <div className="audit-meta" style={{ marginBottom: 8 }}>
                 <div>
                   <div className="stat-label">Sender</div>
                   <div style={{ fontSize: 13, fontWeight: 700 }}>{e.sender}</div>
@@ -104,7 +104,7 @@ export default function AuditLog() {
                   <div style={{ fontSize: 13, fontWeight: 700 }}>{e.receiver}</div>
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--ink-500)', fontWeight: 600 }}>
+              <div className="audit-meta">
                 <span>Amt: {formatKES(e.amount)}</span>
                 <span>Fee: {formatKES(e.fee)}</span>
                 <span>{e.time}</span>

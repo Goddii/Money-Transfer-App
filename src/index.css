@@ -55,12 +55,36 @@ a{color:inherit;text-decoration:none;}
 .screen{
   flex:1;
   width:100%;
-  max-width:480px;
+  max-width:none;
   margin:0 auto;
   padding:20px 18px 84px;
 }
 
 .sidebar{display:none;}
+
+.admin-toolbar,
+.admin-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.admin-toolbar{margin-bottom:14px;}
+.admin-actions{margin-bottom:8px;}
+.admin-toolbar .search-bar{flex:1 1 180px; min-width:0;}
+.admin-toolbar .fab{flex-shrink:0;}
+.admin-actions .btn{flex:1 1 180px;}
+
+.audit-entry-header,
+.audit-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.audit-meta{font-size:12px;color:var(--ink-500);font-weight:600;}
 
 .page-eyebrow{
   font-size:11px;
@@ -75,6 +99,8 @@ a{color:inherit;text-decoration:none;}
   align-items:center;
   justify-content:space-between;
   margin-bottom:18px;
+  gap:12px;
+  flex-wrap:wrap;
 }
 .page-title{
   font-size:24px;
@@ -285,6 +311,31 @@ a{color:inherit;text-decoration:none;}
 }
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 
+@media (min-width:700px){
+  .bottomnav{display:none;}
+
+  .sidebar{
+    display:flex;
+    flex-direction:column;
+    width:194px;
+    flex-shrink:0;
+    background:var(--navy-950);
+    color:var(--white);
+    padding:22px 14px;
+    position:sticky;
+    top:0;
+    height:100vh;
+  }
+
+  .screen{
+    padding:24px 24px 32px;
+    max-width:none;
+    margin:0;
+  }
+
+  .quicklink-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
 @media (min-width:840px){
   .screen{
     padding:32px 40px 40px;
@@ -352,16 +403,29 @@ a{color:inherit;text-decoration:none;}
   .sidebar-logout:hover{background:rgba(216,50,63,.24);}
 
     .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
-  .quicklink-grid{grid-template-columns:repeat(3,minmax(0,220px));}
+  .quicklink-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
   .page-title{font-size:26px;}
 }
 
 @media (min-width:1180px){
-  .screen{max-width:1040px;margin:0 auto;}
+  /* Let the admin content area grow to fill the space beside the sidebar
+     on wide screens instead of locking it to a centered 1040px column. */
+  .screen{max-width:none;margin:0;}
+}
+
+@media (max-width:479px){
+  .page-title-row{align-items:flex-start;}
+  .admin-toolbar{flex-direction:column; align-items:stretch;}
+  .admin-toolbar .fab{align-self:flex-end;}
+  .admin-actions{flex-direction:column;}
+  .admin-actions .btn{width:100%;}
+  .quicklink-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .audit-entry-header{flex-direction:column; align-items:flex-start;}
+  .audit-meta{flex-direction:column; align-items:flex-start;}
 }
 
 @media (min-width:600px) and (max-width:839px){
-  .screen{max-width:600px;padding:24px 24px 84px;}
+  .screen{max-width:none;padding:24px 24px 40px;}
   .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 
