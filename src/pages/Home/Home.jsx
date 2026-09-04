@@ -5,6 +5,7 @@ import api from '../../utils/api'
 import { parseMoney, formatKES } from '../../utils/format'
 import UserMenu from '../../components/UserMenu'
 import UserShell from '../../components/UserShell'
+import OfflineBanner from '../../components/OfflineBanner'
 
 function Home() {
   const { user } = useSelector(state => state.auth)
@@ -54,6 +55,7 @@ function Home() {
 
   return (
     <UserShell nav style={styles.container}>
+      <OfflineBanner />
       <div style={styles.header}>
         <div>
           <p style={styles.greeting}>Good morning,</p>

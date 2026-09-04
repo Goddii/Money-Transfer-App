@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { serviceTypeOf } from '../../utils/serviceTypes'
 import UserShell from '../../components/UserShell'
+import OfflineBanner from '../../components/OfflineBanner'
 
 const SERVICE_ICONS = {
   ELECTRICITY: '⚡',
@@ -38,6 +39,7 @@ function Services() {
 
   return (
     <UserShell nav variant="narrow" style={styles.container}>
+      <OfflineBanner />
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Services</h2>

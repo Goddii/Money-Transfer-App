@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { formatKES } from '../../utils/format'
 import UserShell from '../../components/UserShell'
+import OfflineBanner from '../../components/OfflineBanner'
+import useOnlineStatus from '../../hooks/useOnlineStatus'
 
 const POLL_INTERVAL_MS = 5000
 // Only nudge server-side reconciliation at most this often while a deposit is
@@ -38,6 +40,7 @@ function Deposit() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const isOnline = useOnlineStatus()
 
   // The internal M-Pesa transaction id returned by the STK push. Used to poll
   // the user-facing status endpoint; never the Daraja checkout_request_id.
@@ -155,6 +158,11 @@ function Deposit() {
     setError('')
     setMessage('')
 
+    if (!navigator.onLine) {
+      setError('You appear to be offline. Check your connection and try again.')
+      return
+    }
+
     const numericAmount = Number(amount)
     if (!numericAmount || numericAmount <= 0) {
       setError('Please enter a valid amount')
@@ -189,6 +197,7 @@ function Deposit() {
 
   return (
     <UserShell nav variant="narrow" style={styles.container}>
+      <OfflineBanner message="You're offline. You can't add funds until your connection is back." />
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Add Funds</h2>
@@ -248,8 +257,16 @@ function Deposit() {
         {error && <p style={styles.error}>{error}</p>}
         {message && <p style={styles.success}>{message}</p>}
 
-        <button type="submit" style={styles.button} disabled={submitting}>
-          {submitting ? 'Sending…' : 'Deposit Funds'}
+        <button
+          type="submit"
+          style={
+            submitting || !isOnline
+              ? { ...styles.button, opacity: 0.55, cursor: 'not-allowed' }
+              : styles.button
+          }
+          disabled={submitting || !isOnline}
+        >
+          {submitting ? 'Sending…' : !isOnline ? 'Offline' : 'Deposit Funds'}
         </button>
       </form>
     </UserShell>
