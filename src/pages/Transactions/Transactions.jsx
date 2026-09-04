@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { parseMoney, formatKES } from '../../utils/format'
 import UserShell from '../../components/UserShell'
+import OfflineBanner from '../../components/OfflineBanner'
 
 // Backend transaction type vocabulary (app/models/transaction.py TransactionType).
 const TYPE_TRANSFER = 'Transfer'
@@ -74,6 +75,7 @@ function Transactions() {
 
   return (
     <UserShell nav variant="list" style={styles.container}>
+      <OfflineBanner />
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Transactions</h2>
