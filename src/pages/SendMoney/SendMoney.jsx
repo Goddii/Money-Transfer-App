@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { parseMoney } from '../../utils/format'
 import UserShell from '../../components/UserShell'
+import OfflineBanner from '../../components/OfflineBanner'
+import useOnlineStatus from '../../hooks/useOnlineStatus'
 
 // The Vyloc MVP backend charges no peer-to-peer transfer fee
 // (see TransactionService.TRANSFER_FEE). The fee is displayed from this
@@ -17,6 +19,7 @@ function SendMoney() {
   const [wallet, setWallet] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const isOnline = useOnlineStatus()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -64,6 +67,11 @@ function SendMoney() {
     e.preventDefault()
     setError('')
 
+    if (!navigator.onLine) {
+      setError('You appear to be offline. Check your connection and try again.')
+      return
+    }
+
     if (!selected) {
       setError('Please select a beneficiary')
       return
@@ -100,6 +108,7 @@ function SendMoney() {
 
   return (
     <UserShell nav variant="narrow" style={styles.container}>
+      <OfflineBanner message="You're offline. You can't send money until your connection is back." />
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Send Money</h2>
@@ -172,7 +181,13 @@ function SendMoney() {
 
         {error && <p style={styles.error}>{error}</p>}
 
-        <button type="submit" style={styles.button}>Continue</button>
+        <button
+          type="submit"
+          style={isOnline ? styles.button : { ...styles.button, opacity: 0.55, cursor: 'not-allowed' }}
+          disabled={!isOnline}
+        >
+          {isOnline ? 'Continue' : 'Offline'}
+        </button>
       </form>
     </UserShell>
   )

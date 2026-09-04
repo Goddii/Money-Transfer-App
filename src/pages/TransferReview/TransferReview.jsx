@@ -3,6 +3,8 @@ import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import api from '../../utils/api'
 import { parseMoney } from '../../utils/format'
 import UserShell from '../../components/UserShell'
+import OfflineBanner from '../../components/OfflineBanner'
+import useOnlineStatus from '../../hooks/useOnlineStatus'
 
 // Matches TransactionService.TRANSFER_FEE on the backend (no P2P fee in the MVP).
 const TRANSFER_FEE = 0
@@ -12,6 +14,7 @@ function TransferReview() {
   const { state } = useLocation()
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const isOnline = useOnlineStatus()
 
   const { receiverId, beneficiaryName, amount, currency = 'KES' } = state || {}
 
@@ -30,6 +33,12 @@ function TransferReview() {
 
   async function handleConfirm() {
     setError('')
+
+    if (!navigator.onLine) {
+      setError('You appear to be offline. Check your connection and try again.')
+      return
+    }
+
     setSubmitting(true)
     try {
       // Backend contract: POST /api/transactions/transfer
@@ -64,6 +73,7 @@ function TransferReview() {
 
   return (
     <UserShell variant="narrow" style={styles.container}>
+      <OfflineBanner message="You're offline. This transfer can't be sent until your connection is back." />
       <div style={styles.header}>
         <button onClick={() => navigate(-1)} style={styles.back}>←</button>
         <h2 style={styles.title}>Review Transfer</h2>
@@ -101,8 +111,16 @@ function TransferReview() {
       {error && <p style={styles.error}>{error}</p>}
 
       <div style={styles.actions}>
-        <button onClick={handleConfirm} style={styles.confirmBtn} disabled={submitting}>
-          {submitting ? 'Sending…' : 'Confirm and Send'}
+        <button
+          onClick={handleConfirm}
+          style={
+            submitting || !isOnline
+              ? { ...styles.confirmBtn, opacity: 0.55, cursor: 'not-allowed' }
+              : styles.confirmBtn
+          }
+          disabled={submitting || !isOnline}
+        >
+          {submitting ? 'Sending…' : !isOnline ? 'Offline' : 'Confirm and Send'}
         </button>
         <button onClick={() => navigate(-1)} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
       </div>
